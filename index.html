@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skripsi Engine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap"
+        rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace'],
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-slate-50 text-slate-900 font-sans min-h-screen">
+
+    <!-- NAVIGATION (DESKTOP SIDEBAR) -->
+    <aside class="hidden lg:flex flex-col w-64 bg-white border-r border-slate-200 fixed h-screen z-50">
+        <div class="p-6">
+            <div class="flex items-center gap-3 mb-8">
+                <div
+                    class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-100">
+                    <i class="ti ti-diamond text-2xl"></i>
+                </div>
+                <span class="font-bold text-xl tracking-tighter uppercase">ENGINE.</span>
+            </div>
+
+            <nav class="space-y-1">
+                <div onclick="sw('guide')" id="t-guide"
+                    class="nav-item group flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all bg-blue-50 text-blue-600 font-bold">
+                    <i class="ti ti-home text-lg"></i> <span>Beranda</span>
+                </div>
+                <div onclick="sw('init')" id="t-init"
+                    class="nav-item group flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all text-slate-500 hover:bg-slate-50 hover:text-slate-900">
+                    <i class="ti ti-dna text-lg"></i> <span>DNA Riset</span>
+                </div>
+
+                <div class="pt-4 pb-2 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Penulisan
+                </div>
+                <div onclick="sw('b1')" id="t-b1"
+                    class="nav-item group flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all text-slate-500 hover:bg-slate-50 hover:text-slate-900">
+                    <i class="ti ti-circle-number-1 text-lg"></i> <span>Bab 1</span>
+                </div>
+                <div onclick="sw('b2')" id="t-b2"
+                    class="nav-item group flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all text-slate-500 hover:bg-slate-50 hover:text-slate-900">
+                    <i class="ti ti-circle-number-2 text-lg"></i> <span>Bab 2</span>
+                </div>
+                <div onclick="sw('b3')" id="t-b3"
+                    class="nav-item group flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all text-slate-500 hover:bg-slate-50 hover:text-slate-900">
+                    <i class="ti ti-circle-number-3 text-lg"></i> <span>Bab 3</span>
+                </div>
+                <div onclick="sw('b4')" id="t-b4"
+                    class="nav-item group flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all text-slate-500 hover:bg-slate-50 hover:text-slate-900">
+                    <i class="ti ti-circle-number-4 text-lg"></i> <span>Bab 4</span>
+                </div>
+                <div onclick="sw('b5')" id="t-b5"
+                    class="nav-item group flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all text-slate-500 hover:bg-slate-50 hover:text-slate-900">
+                    <i class="ti ti-circle-number-5 text-lg"></i> <span>Bab 5</span>
+                </div>
+
+                <div class="pt-4 pb-2 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Finalisasi
+                </div>
+                <div onclick="sw('abs')" id="t-abs"
+                    class="nav-item group flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all text-slate-500 hover:bg-slate-50 hover:text-slate-900">
+                    <i class="ti ti-file-text text-lg"></i> <span>Abstrak</span>
+                </div>
+                <div onclick="sw('sid')" id="t-sid"
+                    class="nav-item group flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all text-slate-500 hover:bg-slate-50 hover:text-slate-900">
+                    <i class="ti ti-presentation text-lg"></i> <span>Sidang</span>
+                </div>
+                <div onclick="sw('pub')" id="t-pub"
+                    class="nav-item group flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all text-slate-500 hover:bg-slate-50 hover:text-slate-900">
+                    <i class="ti ti-news text-lg"></i> <span>Jurnal</span>
+                </div>
+            </nav>
+        </div>
+
+        <div class="mt-auto p-4 border-t border-slate-100 space-y-2">
+            <button onclick="saveAll()"
+                class="w-full py-3 bg-slate-900 text-white rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-black transition-all shadow-lg shadow-slate-200">
+                <i class="ti ti-device-floppy mr-2"></i> Simpan Data
+            </button>
+            <div class="flex gap-2">
+                <button onclick="exportData()"
+                    class="flex-1 py-3 bg-slate-100 text-slate-600 rounded-xl hover:bg-slate-200 transition-all"><i
+                        class="ti ti-download"></i></button>
+                <button onclick="clearAllData()"
+                    class="flex-1 py-3 bg-rose-50 text-rose-600 rounded-xl hover:bg-rose-100 transition-all"><i
+                        class="ti ti-refresh"></i></button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MOBILE NAVIGATION (HORIZONTAL SCROLL) -->
+    <div
+        class="lg:hidden fixed top-0 left-0 right-0 bg-white border-bottom border-slate-200 z-50 flex overflow-x-auto no-scrollbar p-2 gap-2 shadow-sm">
+        <div onclick="sw('guide')" id="m-guide"
+            class="shrink-0 px-4 py-2 rounded-lg bg-blue-50 text-blue-600 font-bold text-xs">Beranda</div>
+        <div onclick="sw('init')" id="m-init" class="shrink-0 px-4 py-2 rounded-lg text-slate-500 text-xs">DNA</div>
+        <div onclick="sw('b1')" id="m-b1" class="shrink-0 px-4 py-2 rounded-lg text-slate-500 text-xs">Bab 1</div>
+        <div onclick="sw('b2')" id="m-b2" class="shrink-0 px-4 py-2 rounded-lg text-slate-500 text-xs">Bab 2</div>
+        <div onclick="sw('b3')" id="m-b3" class="shrink-0 px-4 py-2 rounded-lg text-slate-500 text-xs">Bab 3</div>
+        <div onclick="sw('b4')" id="m-b4" class="shrink-0 px-4 py-2 rounded-lg text-slate-500 text-xs">Bab 4</div>
+        <div onclick="sw('b5')" id="m-b5" class="shrink-0 px-4 py-2 rounded-lg text-slate-500 text-xs">Bab 5</div>
+        <div onclick="sw('abs')" id="m-abs" class="shrink-0 px-4 py-2 rounded-lg text-slate-500 text-xs">Abstrak</div>
+        <div onclick="sw('sid')" id="m-sid" class="shrink-0 px-4 py-2 rounded-lg text-slate-500 text-xs">Sidang</div>
+        <div onclick="sw('pub')" id="m-pub" class="shrink-0 px-4 py-2 rounded-lg text-slate-500 text-xs">Jurnal</div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main class="lg:ml-64 p-6 lg:p-10 pt-20 lg:pt-10">
+
+        <!-- HEADER -->
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6">
+            <div>
+                <h1 id="page-title" class="text-4xl font-black text-slate-900 tracking-tight">Beranda</h1>
+                <p id="page-desc" class="text-slate-500 mt-2 text-lg font-medium">Sistem audit dan sintesis skripsi
+                    profesional.</p>
+            </div>
+
+            <div class="flex items-center gap-4 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="text-right">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">DNA Integrity</p>
+                    <div class="flex items-center gap-2">
+                        <span id="integrity-val" class="text-2xl font-black text-blue-600 leading-none">0%</span>
+                        <div class="w-10 h-10 rounded-full border-4 border-slate-100 border-t-blue-600 flex items-center justify-center text-[10px] font-bold text-blue-600"
+                            id="integrity-circle">0</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div id="content-area" class="space-y-10">
+
+            <!-- PANEL: BERANDA -->
+            <section id="p-guide" class="panel block transition-all duration-300 opacity-100">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div
+                        class="lg:col-span-2 bg-slate-900 rounded-[2rem] p-10 text-white relative overflow-hidden shadow-2xl shadow-blue-200">
+                        <div class="relative z-10">
+                            <h2 class="text-4xl lg:text-5xl font-black mb-6 leading-tight">Mastering Your<br><span
+                                    class="text-blue-400 underline decoration-blue-500/30">Academic DNA.</span></h2>
+                            <p class="text-slate-400 text-lg mb-10 max-w-lg leading-relaxed">Upgrade draf skripsi Anda
+                                ke standar jurnal internasional dengan bantuan AI promotor senior yang didukung oleh
+                                database forensic auditing.</p>
+                            <button onclick="sw('init')"
+                                class="bg-blue-600 text-white px-8 py-4 rounded-2xl font-bold hover:bg-blue-500 transition-all shadow-xl shadow-blue-900/40">Inisialisasi
+                                DNA Riset</button>
+                        </div>
+                        <i
+                            class="ti ti-dna absolute -right-20 -bottom-20 text-[24rem] opacity-5 text-blue-400 transform rotate-12"></i>
+                    </div>
+
+                    <div class="bg-white border border-slate-200 rounded-[2rem] p-8 shadow-sm">
+                        <h3 class="font-bold text-xl text-slate-900 mb-8 flex items-center gap-3">
+                            <i class="ti ti-list-check text-blue-600 bg-blue-50 p-2 rounded-lg"></i> Alur Kerja
+                        </h3>
+                        <div class="space-y-8">
+                            <div class="flex gap-5">
+                                <div
+                                    class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-black shrink-0 shadow-sm border border-blue-100">
+                                    1</div>
+                                <div>
+                                    <h4 class="font-bold text-slate-900">DNA Injection</h4>
+                                    <p class="text-sm text-slate-500 mt-1">Lengkapi pilar riset Anda agar AI memahami
+                                        konteks penelitian secara utuh.</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-5">
+                                <div
+                                    class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-black shrink-0 shadow-sm border border-rose-100">
+                                    2</div>
+                                <div>
+                                    <h4 class="font-bold text-slate-900">Forensic Audit</h4>
+                                    <p class="text-sm text-slate-500 mt-1">AI akan membedah naskah Anda untuk menemukan
+                                        kesalahan logika dan akademik.</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-5">
+                                <div
+                                    class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-black shrink-0 shadow-sm border border-emerald-100">
+                                    3</div>
+                                <div>
+                                    <h4 class="font-bold text-slate-900">High Synthesis</h4>
+                                    <p class="text-sm text-slate-500 mt-1">Rekonstruksi naskah menjadi tulisan kelas
+                                        dunia sesuai standar publikasi.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PANEL: DNA INIT -->
+            <section id="p-init" class="panel hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <div class="lg:col-span-8">
+                        <div class="bg-white border border-slate-200 rounded-[2rem] shadow-sm overflow-hidden">
+                            <div
+                                class="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-10">
+                                <h3 class="font-bold text-slate-900">Konfigurasi DNA Riset</h3>
+                                <button onclick="syncDNA()"
+                                    class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-100">Simpan
+                                    DNA</button>
+                            </div>
+                            <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="md:col-span-2 space-y-2">
+                                    <label
+                                        class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2">1.
+                                        Domain Riset (Bidang Ilmu)</label>
+                                    <textarea id="dna-domain" rows="2"
+                                        class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all"
+                                        placeholder="Contoh: Machine Learning, Manajemen SDM, Teknik Sipil..."></textarea>
+                                </div>
+                                <div class="md:col-span-2 space-y-2">
+                                    <label
+                                        class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2">2.
+                                        Akar Masalah (Fenomena)</label>
+                                    <textarea id="dna-problem" rows="3"
+                                        class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all"
+                                        placeholder="Jelaskan fenomena gap atau masalah nyata di lapangan..."></textarea>
+                                </div>
+                                <div class="md:col-span-2 space-y-2">
+                                    <label
+                                        class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2">3.
+                                        Research Gap (Kemutakhiran)</label>
+                                    <textarea id="dna-gap" rows="3"
+                                        class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all"
+                                        placeholder="Apa yang belum terselesaikan oleh penelitian terdahulu?"></textarea>
+                                </div>
+                                <div class="space-y-2">
+                                    <label
+                                        class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2">4.
+                                        Tujuan Riset</label>
+                                    <textarea id="dna-objective" rows="3"
+                                        class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all"
+                                        placeholder="Target akhir yang ingin dicapai..."></textarea>
+                                </div>
+                                <div class="space-y-2">
+                                    <label
+                                        class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2">5.
+                                        Metode Utama</label>
+                                    <textarea id="dna-method" rows="3"
+                                        class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all"
+                                        placeholder="Teknik, algoritma, atau langkah teknis utama..."></textarea>
+                                </div>
+                                <div class="space-y-2">
+                                    <label
+                                        class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2">6.
+                                        Novelty (Kebaruan)</label>
+                                    <textarea id="dna-novelty" rows="3"
+                                        class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all"
+                                        placeholder="Apa keunikan riset Anda?"></textarea>
+                                </div>
+                                <div class="space-y-2">
+                                    <label
+                                        class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2">7.
+                                        Success Metrics</label>
+                                    <textarea id="dna-metrics" rows="3"
+                                        class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all"
+                                        placeholder="Bagaimana mengukur kualitas hasilnya?"></textarea>
+                                </div>
+                                <div class="md:col-span-2 space-y-2">
+                                    <label
+                                        class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2">8.
+                                        Tech Stack / Tools</label>
+                                    <textarea id="dna-stack" rows="2"
+                                        class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all"
+                                        placeholder="Python, AutoCAD, SPSS, React, dll..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-4">
+                        <div class="bg-white border border-slate-200 rounded-[2rem] p-8 shadow-sm sticky top-10">
+                            <h3 class="font-bold text-slate-900 mb-2">Prompt DNA Generator</h3>
+                            <p class="text-xs text-slate-500 mb-6 leading-relaxed">Punya ide kasar? Tempel di bawah dan
+                                gunakan prompt yang dihasilkan untuk meminta AI mengekstraksi 8 pilar DNA Anda.</p>
+                            <textarea id="in-init-ide" rows="5"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm mb-6 outline-none focus:border-blue-500 transition-all"
+                                placeholder="Tulis ide kasar atau judul sementara..."
+                                oninput="render('init')"></textarea>
+
+                            <div class="space-y-4">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase px-2">Generated
+                                    Prompt</label>
+                                <div id="f-init-pre"
+                                    class="bg-slate-900 text-blue-300 font-mono text-[10px] p-5 rounded-2xl leading-relaxed whitespace-pre-wrap h-64 overflow-y-auto border border-slate-800">
+                                    Menunggu input ide...</div>
+                                <button onclick="copyAndPrompt('f-init-pre', this)"
+                                    class="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold text-xs shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all flex items-center justify-center gap-2">
+                                    <i class="ti ti-copy"></i> SALIN PROMPT DNA
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- DYNAMIC PANELS (CHAPTERS 1-4) -->
+            <div id="dynamic-panels"></div>
+
+            <!-- PANEL: BAB 5 -->
+            <section id="p-b5" class="panel hidden">
+                <div class="bg-white border border-slate-200 rounded-[2rem] shadow-sm overflow-hidden">
+                    <div class="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-white">
+                        <h3 class="font-bold text-slate-900">Sintesis Bab 5: Penutup</h3>
+                        <button onclick="copyAndPrompt('f-b5-pre', this)"
+                            class="px-5 py-2.5 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-black transition-all">Salin
+                            Prompt</button>
+                    </div>
+                    <div class="p-8 grid grid-cols-1 lg:grid-cols-2 gap-10">
+                        <div class="space-y-3">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase px-2 tracking-widest">Input
+                                Temuan Utama (Bab 4)</label>
+                            <textarea id="in-b5-res" rows="12"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm focus:border-blue-500 outline-none h-full"
+                                placeholder="Ringkasan poin-poin hasil analisis Bab 4..."
+                                oninput="render('b5')"></textarea>
+                        </div>
+                        <div class="space-y-3">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase px-2 tracking-widest">Preview
+                                Prompt Bab 5</label>
+                            <div id="f-b5-pre"
+                                class="bg-slate-900 text-blue-300 font-mono text-[10px] p-6 rounded-2xl leading-relaxed whitespace-pre-wrap h-[280px] overflow-y-auto border border-slate-800">
+                                ...</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PANEL: ABSTRAK -->
+            <section id="p-abs" class="panel hidden">
+                <div class="bg-white border border-slate-200 rounded-[2rem] shadow-sm overflow-hidden">
+                    <div class="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-white">
+                        <h3 class="font-bold text-slate-900">Penyusunan Abstrak Bilingual</h3>
+                        <button onclick="copyAndPrompt('f-abs-pre', this)"
+                            class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-100">Salin
+                            Prompt</button>
+                    </div>
+                    <div class="p-8 grid grid-cols-1 lg:grid-cols-2 gap-10">
+                        <div class="space-y-3">
+                            <label
+                                class="text-[10px] font-bold text-slate-400 uppercase px-2 tracking-widest">Konsolidasi
+                                Ringkasan Riset</label>
+                            <textarea id="in-abs-res" rows="12"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm focus:border-blue-500 outline-none h-full"
+                                placeholder="Ringkasan inti sari dari Bab 1 sampai Bab 5..."
+                                oninput="render('abs')"></textarea>
+                        </div>
+                        <div class="space-y-3">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase px-2 tracking-widest">Preview
+                                Prompt Abstrak</label>
+                            <div id="f-abs-pre"
+                                class="bg-slate-900 text-blue-300 font-mono text-[10px] p-6 rounded-2xl leading-relaxed whitespace-pre-wrap h-[280px] overflow-y-auto border border-slate-800">
+                                ...</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PANEL: SIDANG -->
+            <section id="p-sid" class="panel hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-white border border-slate-200 rounded-[2rem] shadow-sm overflow-hidden">
+                        <div class="px-8 py-6 border-b border-slate-100 flex justify-between items-center">
+                            <h3 class="font-bold text-rose-600 text-sm tracking-widest uppercase">Killer Questions
+                                Simulator</h3>
+                            <button onclick="copyAndPrompt('f-sid-pre', this)"
+                                class="px-4 py-2 bg-rose-50 text-rose-600 rounded-lg text-xs font-bold">Salin</button>
+                        </div>
+                        <div class="p-8 space-y-4">
+                            <textarea id="in-sid-s-n" rows="10"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm focus:border-rose-300 outline-none"
+                                placeholder="Tempel naskah skripsi lengkap untuk simulasi sidang..."
+                                oninput="render('sid-s')"></textarea>
+                            <div id="f-sid-pre"
+                                class="bg-slate-900 text-rose-300 font-mono text-[10px] p-6 rounded-2xl leading-relaxed whitespace-pre-wrap h-64 overflow-y-auto">
+                                ...</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white border border-slate-200 rounded-[2rem] shadow-sm overflow-hidden">
+                        <div class="px-8 py-6 border-b border-slate-100 flex justify-between items-center">
+                            <h3 class="font-bold text-amber-600 text-sm tracking-widest uppercase">Diamond PPT
+                                Architecture</h3>
+                            <button onclick="copyAndPrompt('f-ppt-pre', this)"
+                                class="px-4 py-2 bg-amber-50 text-amber-600 rounded-lg text-xs font-bold">Salin</button>
+                        </div>
+                        <div class="p-8 space-y-4">
+                            <textarea id="in-sid-p-n" rows="10"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm focus:border-amber-300 outline-none"
+                                placeholder="Poin-poin presentasi atau ringkasan riset Anda..."
+                                oninput="render('sid-p')"></textarea>
+                            <div id="f-ppt-pre"
+                                class="bg-slate-900 text-amber-300 font-mono text-[10px] p-6 rounded-2xl leading-relaxed whitespace-pre-wrap h-64 overflow-y-auto">
+                                ...</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PANEL: JURNAL -->
+            <section id="p-pub" class="panel hidden">
+                <div
+                    class="bg-white border border-slate-200 rounded-[3rem] p-10 lg:p-14 shadow-sm border-2 border-slate-100">
+                    <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
+                        <h3 class="text-3xl font-black text-slate-900">Journal Publication Converter</h3>
+                        <button onclick="copyAndPrompt('f-pub-pre', this)"
+                            class="px-10 py-5 bg-blue-600 text-white rounded-3xl font-black text-sm hover:bg-blue-700 transition-all shadow-2xl shadow-blue-200">SALIN
+                            PROMPT KONVERSI</button>
+                    </div>
+                    <div class="grid grid-cols-1 gap-8">
+                        <div class="space-y-3">
+                            <label class="text-[11px] font-black text-slate-400 uppercase px-4 tracking-[0.2em]">Target
+                                Jurnal Publikasi</label>
+                            <input id="in-pub-target"
+                                class="w-full bg-slate-50 border-2 border-slate-100 rounded-3xl p-6 text-lg font-bold outline-none focus:border-blue-600 focus:bg-white transition-all"
+                                placeholder="Misal: Sinta 2, IEEE Access, Q1 Scopus, dll...">
+                        </div>
+                        <div class="space-y-3">
+                            <label class="text-[11px] font-black text-slate-400 uppercase px-4 tracking-[0.2em]">Naskah
+                                Final Skripsi</label>
+                            <textarea id="in-pub-n" rows="12"
+                                class="w-full bg-slate-50 border-2 border-slate-100 rounded-[2.5rem] p-8 text-base outline-none focus:border-blue-600 focus:bg-white transition-all"
+                                placeholder="Tempel naskah lengkap Anda yang sudah disintesis..."
+                                oninput="render('pub')"></textarea>
+                        </div>
+                        <div id="f-pub-pre"
+                            class="bg-slate-900 text-blue-200 font-mono text-xs p-10 rounded-[2.5rem] leading-relaxed whitespace-pre-wrap h-[400px] overflow-y-auto border-4 border-slate-800">
+                            ...</div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast"
+        class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-10 py-4 rounded-full shadow-2xl font-black text-xs uppercase tracking-widest opacity-0 transition-all z-[1000] pointer-events-none">
+        Operasi Berhasil
+    </div>
+
+    <script>
+        const store = { dna: { domain: '', problem: '', gap: '', objective: '', method: '', novelty: '', metrics: '', stack: '' } };
+
+        const chapters = [
+            { id: 'b1', name: 'Bab 1', title: 'Pendahuluan', color: 'rose' },
+            { id: 'b2', name: 'Bab 2', title: 'Tinjauan Pustaka', color: 'indigo' },
+            { id: 'b3', name: 'Bab 3', title: 'Metodologi', color: 'amber' },
+            { id: 'b4', name: 'Bab 4', title: 'Hasil & Pembahasan', color: 'emerald' }
+        ];
+
+        document.getElementById('dynamic-panels').innerHTML = chapters.map(c => `
+            <section id="p-${c.id}" class="panel hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- AUDIT CARD -->
+                    <div class="bg-white border border-slate-200 rounded-[2rem] shadow-sm flex flex-col h-full overflow-hidden">
+                        <div class="px-8 py-5 border-b border-slate-100 flex justify-between items-center bg-white">
+                            <h3 class="font-bold text-rose-600 text-sm tracking-widest uppercase">Forensic Audit ${c.name}</h3>
+                            <button onclick="copyAndPrompt('r-${c.id}-pre', this)" class="px-4 py-1.5 bg-rose-50 text-rose-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-100 transition-all">Salin</button>
+                        </div>
+                        <div class="p-8 flex flex-col gap-6 flex-1">
+                            <div class="space-y-3">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase px-2 tracking-widest">Naskah Draf ${c.name}</label>
+                                <textarea id="in-${c.id}-a-n" rows="8" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm focus:border-rose-400 outline-none transition-all" placeholder="Tempel naskah draf ${c.name} Anda di sini..." oninput="render('${c.id}-a')"></textarea>
+                            </div>
+                            ${c.id === 'b2' ? `
+                            <div class="space-y-3">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase px-2 tracking-widest">Daftar Referensi / Pustaka</label>
+                                <textarea id="in-${c.id}-a-ref" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm focus:border-rose-400 outline-none transition-all" placeholder="Tempel daftar pustaka untuk dicek kemutakhirannya..." oninput="render('${c.id}-a')"></textarea>
+                            </div>
+                            ` : `
+                            <div class="space-y-3">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase px-2 tracking-widest">Fokus Audit / Catatan Khusus</label>
+                                <input id="in-${c.id}-a-note" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs focus:border-rose-400 outline-none" placeholder="Misal: Fokus pada research gap, cek konsistensi data..." oninput="render('${c.id}-a')">
+                            </div>
+                            `}
+                            <div class="space-y-3 flex-1">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase px-2 tracking-widest">Preview Prompt Audit</label>
+                                <div id="r-${c.id}-pre" class="bg-slate-900 text-rose-300 font-mono text-[10px] p-6 rounded-2xl leading-relaxed whitespace-pre-wrap h-40 overflow-y-auto border border-slate-800">...</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- SYNTHESIS CARD -->
+                    <div class="bg-white border border-slate-200 rounded-[2rem] shadow-sm flex flex-col h-full overflow-hidden">
+                        <div class="px-8 py-5 border-b border-slate-100 flex justify-between items-center bg-white">
+                            <h3 class="font-bold text-emerald-600 text-sm tracking-widest uppercase">High Synthesis ${c.name}</h3>
+                            <button onclick="copyAndPrompt('f-${c.id}-pre', this)" class="px-4 py-1.5 bg-emerald-50 text-emerald-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-100 transition-all">Salin</button>
+                        </div>
+                        <div class="p-8 flex flex-col gap-6 flex-1">
+                            <div class="space-y-3">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase px-2 tracking-widest">Naskah Asli</label>
+                                <textarea id="in-${c.id}-f-n" rows="4" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm focus:border-emerald-400 outline-none transition-all" placeholder="Potongan naskah asli yang ingin disempurnakan..." oninput="render('${c.id}-f')"></textarea>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center px-2">
+                                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Temuan Audit AI</label>
+                                    <button onclick="transferAudit('${c.id}')" class="text-[9px] bg-blue-50 text-blue-600 px-3 py-1 rounded-lg font-black uppercase tracking-widest hover:bg-blue-100 transition-all">Tempel Audit</button>
+                                </div>
+                                <textarea id="in-${c.id}-f-audit" rows="4" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm focus:border-emerald-400 outline-none transition-all" placeholder="Tempel hasil temuan audit AI di sini..." oninput="render('${c.id}-f')"></textarea>
+                            </div>
+                            <div class="space-y-3">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase px-2 tracking-widest">Instruksi Tambahan Editor</label>
+                                <input id="in-${c.id}-f-note" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs focus:border-emerald-400 outline-none" placeholder="Misal: Gunakan tone yang lebih persuasif, buat lebih ringkas..." oninput="render('${c.id}-f')">
+                            </div>
+                            <div class="space-y-3 flex-1">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase px-2 tracking-widest">Preview Prompt Sintesis</label>
+                                <div id="f-${c.id}-pre" class="bg-slate-900 text-emerald-300 font-mono text-[10px] p-6 rounded-2xl leading-relaxed whitespace-pre-wrap h-40 overflow-y-auto border border-slate-800 flex-1">...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        `).join('');
+
+        // Re-inject the panels for final tabs
+        const tabB5 = document.getElementById('p-b5');
+        tabB5.innerHTML = `
+            <div class="bg-white border border-slate-200 rounded-[2rem] shadow-sm overflow-hidden">
+                <div class="px-8 py-5 border-b border-slate-100 flex justify-between items-center bg-white">
+                    <h3 class="font-bold text-slate-900 text-sm tracking-widest uppercase">Sintesis Bab 5: Penutup</h3>
+                    <button onclick="copyAndPrompt('f-b5-pre', this)" class="px-4 py-1.5 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all">Salin Prompt</button>
+                </div>
+                <div class="p-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="space-y-6">
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase px-2 tracking-widest">Input Temuan Utama (Bab 4)</label>
+                            <textarea id="in-b5-res" rows="8" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm focus:border-blue-500 outline-none" placeholder="Ringkasan poin-poin hasil analisis Bab 4..." oninput="render('b5')"></textarea>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase px-2 tracking-widest">Saran / Catatan Pembimbing</label>
+                            <textarea id="in-b5-note" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm focus:border-blue-500 outline-none" placeholder="Misal: Dosen minta fokus pada saran untuk instansi X..." oninput="render('b5')"></textarea>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase px-2 tracking-widest">Preview Prompt Bab 5</label>
+                        <div id="f-b5-pre" class="bg-slate-900 text-blue-300 font-mono text-[10px] p-6 rounded-2xl leading-relaxed whitespace-pre-wrap h-full min-h-[300px] overflow-y-auto border border-slate-800">...</div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        const tabPub = document.getElementById('p-pub');
+        tabPub.innerHTML = `
+            <div class="bg-white border border-slate-200 rounded-[2rem] shadow-sm overflow-hidden">
+                <div class="px-8 py-5 border-b border-slate-100 flex justify-between items-center bg-white">
+                    <h3 class="font-bold text-blue-600 text-sm tracking-widest uppercase">Journal Publication Converter</h3>
+                    <button onclick="copyAndPrompt('f-pub-pre', this)" class="px-4 py-1.5 bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-100">Salin Prompt</button>
+                </div>
+                <div class="p-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="space-y-6">
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase px-2 tracking-widest">Target Jurnal Publikasi</label>
+                            <input id="in-pub-target" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm outline-none focus:border-blue-500 transition-all" placeholder="Misal: Sinta 2, IEEE Access, Q1 Scopus, dll..." oninput="render('pub')">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase px-2 tracking-widest">Gaya Sitasi (Citation Style)</label>
+                            <input id="in-pub-style" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm outline-none focus:border-blue-500 transition-all" placeholder="Misal: APA 7th, IEEE, Harvard, dll..." oninput="render('pub')">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase px-2 tracking-widest">Naskah Final Skripsi</label>
+                            <textarea id="in-pub-n" rows="8" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm outline-none focus:border-blue-500 transition-all" placeholder="Tempel naskah lengkap Anda yang sudah disintesis..." oninput="render('pub')"></textarea>
+                        </div>
+                    </div>
+                    <div class="flex flex-col">
+                         <label class="text-[10px] font-bold text-slate-400 uppercase px-2 tracking-widest mb-2">Preview Prompt Jurnal</label>
+                         <div id="f-pub-pre" class="bg-slate-900 text-blue-200 font-mono text-[10px] p-6 rounded-2xl leading-relaxed whitespace-pre-wrap flex-1 overflow-y-auto border border-slate-800 min-h-[300px]">...</div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        const templates = {
+            init: (ide) => `
+<PERAN>
+Kamu adalah Promotor Riset Akademik senior dengan pengalaman 20 tahun membimbing
+penelitian S1, S2, dan S3 di Indonesia. Kamu sangat familiar dengan standar
+skripsi/tesis universitas Indonesia dan jurnal Sinta/Scopus.
+</PERAN>
+
+<IDE_RISET>
+${ide || '[IDE]'}
+</IDE_RISET>
+
+<PROSES_BERPIKIR>
+Sebelum menulis output, lakukan analisis internal langkah demi langkah:
+
+LANGKAH 1 — IDENTIFIKASI DOMAIN
+Tentukan bidang ilmu utama dan sub-bidang spesifik. Jangan terlalu luas ("Teknologi")
+dan jangan terlalu sempit. Level yang tepat: "Deep Learning untuk Deteksi Penyakit Tanaman".
+
+LANGKAH 2 — GALI AKAR MASALAH
+Temukan MENGAPA masalah ini belum terpecahkan, bukan hanya BAHWA ada masalah.
+Harus bisa dijawab dengan data atau fakta yang bisa dicari.
+
+LANGKAH 3 — PETA RESEARCH GAP
+Apa yang sudah dilakukan peneliti lain? Di mana batasnya? Apa yang belum dieksplorasi?
+
+LANGKAH 4 — RUMUSKAN NOVELTY
+Apa kontribusi baru yang BELUM ADA di literatur? Harus spesifik, bukan "mengembangkan
+metode yang lebih baik" — itu terlalu umum.
+
+LANGKAH 5 — PILIH METODOLOGI YANG TEPAT
+Justifikasi mengapa metode ini dipilih vs metode alternatif. Pastikan metode ini
+realistis untuk skala skripsi S1/S2.
+
+LANGKAH 6 — TENTUKAN METRIK KEBERHASILAN
+Metrik harus kuantitatif, measurable, dan realistis. Contoh baik: "Akurasi ≥ 90%
+pada dataset X". Contoh buruk: "Sistem yang lebih baik dari sebelumnya".
+
+LANGKAH 7 — CEK KONSISTENSI INTERNAL
+Apakah semua pilar di atas saling mendukung? Apakah ada kontradiksi?
+Tandai jika ada ketidakcocokan.
+</PROSES_BERPIKIR>
+
+<LARANGAN>
+- JANGAN mengisi field dengan kalimat generik yang bisa berlaku untuk riset apapun
+- JANGAN menggunakan istilah "sistem yang lebih baik", "meningkatkan efisiensi" tanpa angka
+- JANGAN buat metodologi yang tidak realistis untuk skripsi S1
+</LARANGAN>
+
+<FORMAT_OUTPUT>
+Isi setiap field dengan KALIMAT LENGKAP yang spesifik dan operasional.
+Target: setiap field bisa langsung dijadikan bahan penulisan Bab 1.
+
+=== DNA RISET ===
+• DOMAIN          : [Bidang ilmu + sub-bidang + konteks spesifik, contoh: "Visi Komputer untuk Klasifikasi Penyakit Daun Padi di Lingkungan Pertanian Indonesia"]
+• ROOT_PROBLEM    : [Masalah nyata + dampak kuantitatif jika diketahui, contoh: "Diagnosis manual penyakit padi oleh petani memiliki akurasi rata-rata 58% dan membutuhkan waktu 2-3 hari, menyebabkan kerugian hasil panen hingga 40%"]
+• RESEARCH_GAP    : [Apa yang belum dilakukan peneliti sebelumnya secara spesifik]
+• NOVELTY         : [Kontribusi baru yang unik dan belum ada di literatur — 1-2 kalimat padat]
+• METHODOLOGY     : [Metode utama + justifikasi singkat mengapa metode ini dipilih]
+• SUCCESS_METRICS : [Metrik 1: target angka | Metrik 2: target angka | Metrik 3: target angka]
+• TECH_STACK      : [Bahasa pemrograman, framework, library utama, hardware jika relevan]
+=== END DNA ===
+
+⚠️ CATATAN KONSISTENSI:
+[Jika ada potensi inkonsistensi atau kelemahan antar pilar, sebutkan di sini]
+</FORMAT_OUTPUT>`,
+            audit: (d, n, ch, note, ref) => {
+                const criteriaMap = {
+                    b1: `<KRITERIA_AUDIT_BAB1>
+Audit naskah Bab 1 berdasarkan 8 kriteria berikut secara berurutan:
+
+1. KEJELASAN LATAR BELAKANG
+   — Apakah masalah diperkenalkan dari sudut pandang makro ke mikro?
+   — Apakah ada data/fakta pendukung yang spesifik (bukan klaim umum)?
+
+2. KETAJAMAN RESEARCH GAP
+   — Apakah gap riset diidentifikasi secara eksplisit dan spesifik?
+   — Apakah gap ini didukung oleh referensi terkini (idealnya ≤5 tahun)?
+
+3. RUMUSAN MASALAH
+   — Apakah rumusan masalah berbentuk pertanyaan yang bisa dijawab?
+   — Apakah setiap rumusan masalah punya tujuan penelitian yang sepadan (1:1)?
+
+4. TUJUAN PENELITIAN
+   — Apakah tujuan operasional dan measurable?
+   — Apakah tujuan langsung menjawab rumusan masalah?
+
+5. BATASAN PENELITIAN
+   — Apakah batasan realistis dan tidak membunuh kontribusi riset?
+   — Apakah batasan terlalu banyak sehingga melemahkan manfaat penelitian?
+
+6. MANFAAT PENELITIAN
+   — Apakah manfaat spesifik dan tidak over-claim?
+   — Apakah ada manfaat teoritis DAN praktis?
+
+7. KONSISTENSI DENGAN DNA
+   — Apakah semua klaim di Bab 1 konsisten dengan pilar DNA di atas?
+   — Apakah ada klaim yang tidak didukung DNA?
+
+8. KUALITAS BAHASA AKADEMIK
+   — Apakah ada kalimat klise seperti "di era globalisasi", "seiring perkembangan teknologi"?
+   — Apakah paragraf padat atau banyak pengulangan?
+</KRITERIA_AUDIT_BAB1>`,
+                    b2: `<KRITERIA_AUDIT_BAB2>
+1. KEMUTAKHIRAN REFERENSI
+   — Berapa persen referensi berumur > 5 tahun? (idealnya < 30%)
+   — Apakah ada referensi dari jurnal Q1/Q2 atau conference tier-A?
+
+2. KEDALAMAN SINTESIS vs RINGKASAN
+   — Apakah Bab 2 hanya meringkas paper satu per satu, atau mensintesis pola dan kontradiksi?
+   — Apakah ada kalimat "Penelitian X menyatakan... Penelitian Y menyatakan..." berulang tanpa analisis?
+
+3. POSISI PENELITIAN
+   — Apakah secara eksplisit dijelaskan di mana posisi penelitian ini relatif terhadap yang sudah ada?
+   — Apakah ada "Tabel Perbandingan Penelitian Terdahulu" atau yang setara?
+
+4. RELEVANSI TEORI DENGAN METODOLOGI
+   — Apakah semua teori dan metode yang dipakai di Bab 3 sudah diperkenalkan di Bab 2?
+   — Apakah ada teori yang dijelaskan panjang lebar tapi tidak dipakai di bab selanjutnya?
+
+5. KONSISTENSI DENGAN DNA
+   — Apakah literature review membangun argumen menuju novelty yang ada di DNA?
+   — Apakah research gap di DNA bisa dibuktikan dari sintesis literatur di Bab 2?
+
+6. KUALITAS SITASI
+   — Apakah sitasi menggunakan format yang konsisten?
+   — Apakah ada klaim tanpa sitasi?
+</KRITERIA_AUDIT_BAB2>
+
+<DAFTAR_REFERENSI_MAHASISWA>
+${ref || 'Lihat di dalam naskah.'}
+</DAFTAR_REFERENSI_MAHASISWA>`,
+                    b3: `<KRITERIA_AUDIT_BAB3>
+1. REPRODUCIBILITY
+   — Bisakah peneliti lain mereplikasi penelitian ini hanya dari bab ini?
+   — Apakah dataset dijelaskan lengkap: ukuran, sumber, lisensi, split train/val/test?
+
+2. JUSTIFIKASI METODOLOGI
+   — Apakah pemilihan metode dijustifikasi vs alternatif lain?
+   — Apakah ada alasan teknis, bukan hanya "metode ini populer" atau "banyak digunakan"?
+
+3. PROSEDUR PENELITIAN
+   — Apakah alur penelitian jelas dari awal hingga akhir?
+   — Apakah ada diagram alir (flowchart) penelitian?
+
+4. VALIDITAS & RELIABILITAS
+   — Apakah metode validasi dijelaskan? (cross-validation, hold-out, dll)
+   — Apakah ada potensi bias yang diakui?
+
+5. METRIK EVALUASI
+   — Apakah metrik sesuai dengan jenis masalah?
+     (Klasifikasi imbalanced → F1/AUC, bukan hanya Akurasi)
+   — Apakah ada baseline untuk perbandingan?
+
+6. KONSISTENSI DENGAN DNA
+   — Apakah metode yang dipakai sesuai dengan METHODOLOGY di DNA?
+   — Apakah tech stack yang digunakan sesuai dengan TECH_STACK di DNA?
+</KRITERIA_AUDIT_BAB3>`,
+                    b4: `<KRITERIA_AUDIT_BAB4>
+1. KETERKAITAN HASIL DENGAN TUJUAN
+   — Apakah setiap hasil dikaitkan kembali ke tujuan penelitian spesifik?
+   — Apakah semua rumusan masalah sudah terjawab?
+
+2. KEDALAMAN ANALISIS
+   — Apakah pembahasan MENGANALISIS mengapa hasil seperti itu, bukan hanya mendeskripsikan?
+   — Apakah ada frasa seperti "dari tabel di atas dapat dilihat bahwa..." tanpa analisis lanjutan?
+
+3. PERBANDINGAN DENGAN BASELINE/STATE-OF-THE-ART
+   — Apakah hasil dibandingkan dengan penelitian sebelumnya secara kuantitatif?
+   — Apakah klaim "lebih baik dari X" didukung angka konkret?
+
+4. PEMBAHASAN ANOMALI
+   — Apakah ada hasil yang tidak sesuai harapan? Apakah dibahas secara jujur?
+   — Apakah keterbatasan hasil diakui?
+
+5. KONSISTENSI DENGAN SUCCESS_METRICS DI DNA
+   — Apakah semua metrik yang dijanjikan di DNA sudah dilaporkan?
+   — Apakah target metrik tercapai? Jika tidak, apakah dijelaskan mengapa?
+
+6. KUALITAS VISUALISASI
+   — Apakah tabel dan grafik self-explanatory (bisa dipahami tanpa membaca teks)?
+   — Apakah ada redundansi (data yang sama disajikan sebagai tabel DAN grafik tanpa alasan)?
+</KRITERIA_AUDIT_BAB4>`
+                };
+
+                const roles = {
+                    b1: 'Reviewer Senior jurnal Sinta 1 / Scopus Q2 dengan spesialisasi menilai kualitas Pendahuluan penelitian. Kamu terkenal sangat teliti dan tidak segan memberi nilai buruk jika Pendahuluan tidak solid.',
+                    b2: 'Reviewer dengan keahlian khusus menilai kualitas Literature Review. Kamu sangat ketat soal kemutakhiran referensi dan kedalaman sintesis.',
+                    b3: 'Metodolog riset yang sangat ketat soal reproducibility. Standarmu: "Jika peneliti lain tidak bisa mereplikasi penelitian ini hanya dari Bab 3, maka gagal."',
+                    b4: 'Reviewer yang ahli membedakan antara "melaporkan hasil" dan "menganalisis hasil". Kamu tidak toleran terhadap pembahasan yang hanya mendeskripsikan angka tanpa interpretasi.'
+                };
+
+                const tag = ch.replace('b', 'BAB').toUpperCase();
+                return `
+<DNA_KONTEKS>
+${d}
+</DNA_KONTEKS>
+
+<NASKAH_${tag}>
+${n || '[NASKAH]'}
+</NASKAH_${tag}>
+
+<PERAN>
+Kamu adalah ${roles[ch] || roles.b1}
+</PERAN>
+
+${criteriaMap[ch] || criteriaMap.b1}
+
+<CATATAN_TAMBAHAN_MAHASISWA>
+${note || 'Gunakan kriteria standar di atas.'}
+</CATATAN_TAMBAHAN_MAHASISWA>
+
+<FORMAT_OUTPUT>
+Untuk setiap temuan, gunakan format wajib ini:
+
+[TEMUAN-##] ▌ FATAL / MAYOR / MINOR
+Kriteria  : [nomor kriteria di atas]
+Lokasi    : [paragraf/sub-bab tempat masalah ditemukan]
+Masalah   : [deskripsi masalah secara spesifik]
+Dampak    : [apa yang terjadi jika ini tidak diperbaiki]
+Solusi    : [langkah konkret untuk memperbaiki — bukan hanya saran umum]
+
+Di akhir, berikan:
+RINGKASAN AUDIT:
+- Total temuan FATAL: [n]
+- Total temuan MAYOR: [n]
+- Total temuan MINOR: [n]
+- Rekomendasi utama (1 kalimat): [...]
+</FORMAT_OUTPUT>`;
+            },
+            synthesis: (d, n, a, ch, note) => `
+<DNA_KONTEKS>
+${d}
+</DNA_KONTEKS>
+
+<NASKAH_ASLI>
+${n || '[NASKAH]'}
+</NASKAH_ASLI>
+
+<HASIL_AUDIT>
+${a || '[AUDIT]'}
+</HASIL_AUDIT>
+
+<PERAN>
+Kamu adalah Editor Akademik senior yang ahli memperbaiki naskah skripsi Indonesia
+tanpa mengubah substansi dan fakta yang sudah ada.
+</PERAN>
+
+<INSTRUKSI_KHUSUS_EDITOR>
+${note || 'Perbaiki berdasarkan hasil audit dengan tetap mempertahankan gaya akademik yang kuat.'}
+</INSTRUKSI_KHUSUS_EDITOR>
+
+<ATURAN_WAJIB — BACA DULU SEBELUM MENULIS>
+✅ BOLEH:
+- Memperbaiki struktur kalimat dan paragraf
+- Mengganti frasa lemah dengan frasa akademik yang lebih kuat
+- Memindahkan kalimat ke posisi yang lebih logis dalam paragraf yang sama
+- Menghapus kalimat yang berulang atau tidak menambah nilai
+- Menambahkan kalimat transisi antar paragraf
+
+❌ DILARANG KERAS:
+- Menambahkan data, angka, atau statistik baru yang tidak ada di naskah asli
+- Menambahkan sitasi baru yang tidak ada di naskah asli
+- Mengubah angka yang sudah ada (misalnya mengubah "92%" menjadi "95%")
+- Menghilangkan bagian struktural penting (sub-bab, kesimpulan paragraf)
+- Menulis kalimat yang tidak bisa diverifikasi dari naskah asli
+
+Jika ada bagian yang perlu ditambahkan data tapi tidak ada di naskah asli,
+tandai dengan: [PERLU DATA: deskripsi data yang dibutuhkan]
+</ATURAN_WAJIB>
+
+<PANDUAN_GAYA_PENULISAN>
+AKTIF, BUKAN PASIF:
+❌ "Data dikumpulkan oleh peneliti"
+✅ "Peneliti mengumpulkan data"
+
+SPESIFIK, BUKAN UMUM:
+❌ "Hasil menunjukkan peningkatan yang signifikan"
+✅ "Akurasi meningkat dari 78% menjadi 94.2% (p < 0.05)"
+
+PADAT, BUKAN BERTELE:
+❌ "Berdasarkan uraian yang telah dikemukakan di atas, dapat disimpulkan bahwa..."
+✅ Langsung ke kesimpulan tanpa intro klise
+
+FRASA TERLARANG — jangan pernah gunakan:
+- "di era globalisasi saat ini"
+- "seiring perkembangan teknologi"
+- "hal ini menunjukkan bahwa" (tanpa data)
+- "tidak dapat dipungkiri bahwa"
+- "sudah tidak asing lagi"
+- "penelitian ini sangat penting"
+</PANDUAN_GAYA_PENULISAN>
+
+<TUGAS>
+Perbaiki naskah berdasarkan hasil audit di atas.
+Selesaikan setiap temuan FATAL dan MAYOR dari audit.
+Pertahankan panjang output ±15% dari panjang aslinya.
+Pertahankan semua sub-bab dan struktur yang ada.
+</TUGAS>`,
+            b5: (d, res, note) => `
+<DNA_KONTEKS>
+${d}
+</DNA_KONTEKS>
+
+<TEMUAN_RISET>
+${res || '[TEMUAN]'}
+</TEMUAN_RISET>
+
+<SARAN_PEMBIMBING>
+${note || 'Tidak ada catatan khusus.'}
+</SARAN_PEMBIMBING>
+
+<PERAN>
+Kamu adalah akademisi yang ahli menulis Bab Penutup skripsi.
+Tugasmu: memastikan setiap tujuan penelitian dijawab secara tuntas dan jujur.
+</PERAN>
+
+<PANDUAN_STRUKTUR_BAB5>
+Tulis Bab 5 dengan struktur berikut — JANGAN melewatkan satu pun bagian:
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+5.1 KESIMPULAN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Tulis 1 paragraf pembuka singkat, lalu jawab SETIAP tujuan penelitian
+dengan paragraf/poin tersendiri.
+
+Aturan per kesimpulan:
+- Nyatakan apa yang dicapai dengan ANGKA KONKRET dari temuan di atas
+- Hubungkan langsung ke tujuan penelitian yang bersangkutan
+- Jangan mengulang kalimat dari Bab 4
+- Jangan menggunakan frasa "dapat disimpulkan bahwa..."
+
+Contoh FORMAT yang baik:
+"Tujuan pertama penelitian ini — membangun model klasifikasi penyakit padi —
+telah tercapai. Model CNN yang dikembangkan mencapai akurasi 94.2% pada test set,
+melampaui target awal sebesar 90% dan meningkat 16.2 poin persentase dari baseline."
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+5.2 KETERBATASAN PENELITIAN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Sebutkan 2-3 keterbatasan riset yang NYATA dan JUJUR.
+Ini bukan kelemahal yang memalukan, tapi bukti kematangan akademik.
+Jangan menulis keterbatasan yang sebenarnya bisa diatasi dalam penelitian ini.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+5.3 SARAN PRAKTIS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Berikan 2-3 rekomendasi konkret untuk PRAKTISI atau INSTITUSI
+yang bisa langsung menggunakan hasil penelitian ini.
+Harus spesifik — siapa yang disarankan? melakukan apa? dengan hasil apa?
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+5.4 SARAN PENELITIAN LANJUTAN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Berikan 3 arah penelitian masa depan yang SPESIFIK dan ACTIONABLE.
+Setiap saran harus:
+- Menyebutkan apa yang akan dilakukan (bukan hanya "lebih lanjut")
+- Menjelaskan mengapa ini penting berdasarkan keterbatasan yang disebutkan
+- Bisa dijadikan judul skripsi/tesis tersendiri
+
+HINDARI saran generik seperti:
+❌ "Penelitian selanjutnya dapat menggunakan dataset yang lebih besar"
+✅ "Penelitian lanjutan dapat mengeksplorasi performa model pada kondisi
+   pencahayaan malam hari menggunakan infrared camera, mengingat keterbatasan
+   penelitian ini yang hanya menggunakan foto siang hari."
+</PANDUAN_STRUKTUR_BAB5>`,
+            abs: (d, res) => `
+<DNA_KONTEKS>
+${d}
+</DNA_KONTEKS>
+
+<HASIL_RISET>
+${res || '[HASIL]'}
+</HASIL_RISET>
+
+<PERAN>
+Kamu adalah editor jurnal internasional yang ahli menulis abstrak ilmiah.
+Kamu tahu bahwa abstrak yang buruk menyebabkan paper ditolak sebelum dibaca.
+</PERAN>
+
+<BLUEPRINT_ABSTRAK>
+Tulis abstrak dengan alokasi ketat berikut:
+
+KALIMAT 1-2 — LATAR BELAKANG & MASALAH
+Perkenalkan masalah secara langsung dengan konteks yang relevan.
+Gunakan data/fakta jika tersedia. JANGAN mulai dengan "Penelitian ini...".
+
+KALIMAT 3-4 — TUJUAN & NOVELTY
+Nyatakan tujuan penelitian dan apa yang membedakannya dari penelitian sebelumnya.
+
+KALIMAT 5-7 — METODOLOGI
+Sebutkan: pendekatan utama, dataset/sumber data (jika ada), teknik kunci.
+Cukup ringkas — bukan metodologi lengkap.
+
+KALIMAT 8-10 — HASIL UTAMA
+Sebutkan temuan PALING PENTING dengan angka konkret.
+Ini bagian yang paling sering dibaca — buat semenarik mungkin secara akademik.
+
+KALIMAT 11-12 — KESIMPULAN & IMPLIKASI
+Apa makna hasil ini? Siapa yang bisa memanfaatkannya?
+</BLUEPRINT_ABSTRAK>
+
+<ATURAN_TEKNIS>
+- Target panjang: 200-250 kata (Bahasa Indonesia), 180-220 kata (English)
+- DILARANG: "Penelitian ini bertujuan untuk..." sebagai kalimat pertama
+- DILARANG: referensi/sitasi dalam abstrak
+- DILARANG: singkatan yang tidak dijelaskan
+- WAJIB: hasil kuantitatif (angka, persentase, skor) dari temuan utama
+- WAJIB: abstrak Inggris harus merupakan terjemahan akurat dari abstrak Indonesia,
+  bukan versi yang berbeda
+</ATURAN_TEKNIS>
+
+<FORMAT_OUTPUT>
+ABSTRAK (Bahasa Indonesia)
+[Isi abstrak Indonesia — 200-250 kata]
+
+ABSTRACT (English)
+[Isi abstrak Inggris — terjemahan akurat dari atas, 180-220 kata]
+
+KATA KUNCI: [5-7 kata kunci, pisahkan dengan titik koma, urutkan dari spesifik ke umum]
+KEYWORDS: [terjemahan kata kunci di atas]
+</FORMAT_OUTPUT>`,
+            sid_s: (d, n) => `
+<DNA_KONTEKS>
+${d}
+</DNA_KONTEKS>
+
+<NASKAH_SKRIPSI>
+${n || '[NASKAH]'}
+</NASKAH_SKRIPSI>
+
+<PERAN>
+Kamu adalah 3 penguji sidang skripsi dengan kepribadian berbeda.
+Tugasmu mensimulasikan sidang yang realistis dan menantang.
+</PERAN>
+
+<SIMULASI_3_TIPE_PENGUJI>
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+PENGUJI 1 — Si Metodolog (4 pertanyaan)
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+Fokus: Keabsahan metode, validitas data, reproducibility
+Karakter: Datar, sangat teknis, tidak peduli presentasi — hanya peduli rigor
+Pertanyaan khasnya: "Bagaimana Anda bisa yakin bahwa..."
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+PENGUJI 2 — Si Penantang Kontribusi (4 pertanyaan)
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+Fokus: Novelty, relevansi, perbedaan dengan penelitian sebelumnya
+Karakter: Sinis, sering membandingkan dengan paper lain
+Pertanyaan khasnya: "Ini kan sama saja dengan yang dilakukan X pada tahun Y..."
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+PENGUJI 3 — Si Penanya Praktis (2 pertanyaan)
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+Fokus: Aplikasi nyata, manfaat, kelayakan implementasi
+Karakter: Ramah tapi kritis soal relevansi praktis
+Pertanyaan khasnya: "Kalau saya mau pakai ini di industri, apa tantangannya?"
+</SIMULASI_3_TIPE_PENGUJI>
+
+<FORMAT_PER_PERTANYAAN>
+Untuk setiap pertanyaan gunakan format:
+
+[P-##] [TIPE PENGUJI] | Tingkat Kesulitan: ⭐⭐⭐⭐ (1-5)
+Pertanyaan: "[teks pertanyaan seperti penguji benar-benar bertanya]"
+
+🎯 Apa yang sebenarnya ingin diuji penguji:
+[jebakan tersembunyi atau kelemahan yang dicari penguji]
+
+💡 Strategi menjawab:
+[pendekatan, bukan hanya konten — bagaimana memulai, bagaimana menutup]
+
+📝 Draf jawaban (maks 90 detik berbicara / ~150 kata):
+[jawaban yang percaya diri, akurat, dan tidak defensif]
+
+⚡ Kemungkinan follow-up:
+[1 pertanyaan lanjutan yang mungkin muncul setelah jawaban di atas]
+</FORMAT_PER_PERTANYAAN>
+
+<BONUS>
+Di akhir, berikan:
+🆘 STRATEGI "JIKA TIDAK TAHU JAWABANNYA"
+Cara elegan mengakui ketidaktahuan tanpa terlihat tidak kompeten,
+dengan template kalimat yang bisa langsung dipakai.
+</BONUS>`,
+            sid_p: (d, n) => `
+<DNA_KONTEKS>
+${d}
+</DNA_KONTEKS>
+
+<NASKAH_SKRIPSI>
+${n || '[NASKAH]'}
+</NASKAH_SKRIPSI>
+
+<PERAN>
+Kamu adalah presentation coach yang ahli merancang slide sidang skripsi.
+Prinsipmu: setiap slide harus punya SATU pesan utama yang bisa dipahami dalam 5 detik.
+</PERAN>
+
+<STRUKTUR_WAJIB_12_SLIDE>
+Rancang tepat 12 slide dengan struktur berikut:
+
+SLIDE 1 — COVER
+Konten: Judul, Nama, NIM, Pembimbing, Institusi, Tanggal
+Waktu: 0 detik (tampil saat perkenalan)
+
+SLIDE 2 — AGENDA
+Konten: 5-6 poin agenda dalam bentuk visual sederhana
+Waktu: 30 detik
+
+SLIDE 3 — LATAR BELAKANG & MASALAH
+Konten: 1 fakta/data yang mengejutkan + pernyataan masalah
+Aturan: JANGAN lebih dari 3 poin, gunakan data visual jika ada
+Waktu: 2 menit
+
+SLIDE 4 — RESEARCH GAP & TUJUAN
+Konten: Gap yang diidentifikasi (bisa berupa tabel perbandingan) + tujuan penelitian
+Waktu: 2 menit
+
+SLIDE 5 — TINJAUAN PUSTAKA (ringkas)
+Konten: Positioning penelitian ini vs 3-5 penelitian terkait
+Format rekomendasi: Tabel perbandingan (Penelitian | Metode | Kelebihan | Kekurangan)
+Waktu: 1.5 menit
+
+SLIDE 6 — METODOLOGI (overview)
+Konten: Diagram alir penelitian — visualkan, jangan tulis paragraf
+Waktu: 2 menit
+
+SLIDE 7 — METODOLOGI (detail teknis)
+Konten: Detail teknis utama (arsitektur model, dataset, parameter kunci)
+Waktu: 2 menit
+
+SLIDE 8 — HASIL UTAMA
+Konten: 1-2 visualisasi hasil paling kuat (grafik/tabel)
+Aturan: ANGKA BESAR, visual dominan — teks minimal
+Waktu: 2 menit
+
+SLIDE 9 — PERBANDINGAN DENGAN BASELINE
+Konten: Tabel/grafik komparasi dengan penelitian sebelumnya
+Waktu: 1.5 menit
+
+SLIDE 10 — PEMBAHASAN & ANALISIS
+Konten: Interpretasi hasil — MENGAPA hasilnya seperti ini
+Waktu: 1.5 menit
+
+SLIDE 11 — KESIMPULAN & KONTRIBUSI
+Konten: Jawaban per tujuan penelitian + kontribusi utama (novelty)
+Format: Bullet point padat, max 4 poin
+Waktu: 1.5 menit
+
+SLIDE 12 — PENUTUP & TERIMA KASIH
+Konten: Saran penelitian lanjutan (2 poin) + ucapan terima kasih + kontak
+Waktu: 30 detik
+</STRUKTUR_WAJIB_12_SLIDE>
+
+<ATURAN_DESAIN_KONTEN>
+- Maks 5 bullet per slide
+- Maks 7 kata per bullet
+- Setiap slide: tuliskan 1 kalimat "TAKEAWAY MESSAGE" yang ingin disampaikan
+- Data/angka penting: tampilkan BESAR, bukan dalam paragraf
+- HINDARI: slide berisi teks paragraf penuh (copy-paste dari skripsi)
+</ATURAN_DESAIN_KONTEN>
+
+<FORMAT_OUTPUT>
+Untuk setiap slide:
+
+[SLIDE ##] — [JUDUL SLIDE]
+⏱️ Estimasi waktu: [X menit]
+🎯 Takeaway message: [1 kalimat — pesan yang harus diingat audiens]
+📋 Konten:
+  • [poin 1]
+  • [poin 2]
+  • [poin 3]
+💬 Catatan presenter: [panduan apa yang harus dikatakan, bukan ditulis di slide]
+</FORMAT_OUTPUT>`,
+            pub: (d, target, style, n) => `
+<DNA_KONTEKS>
+${d}
+</DNA_KONTEKS>
+
+<TARGET_JURNAL>
+${target || '[TARGET]'}
+</TARGET_JURNAL>
+
+<GAYA_SITASI>
+${style || 'Gunakan standar jurnal target.'}
+</GAYA_SITASI>
+
+<NASKAH_SKRIPSI>
+${n || '[NASKAH]'}
+</NASKAH_SKRIPSI>
+
+<PERAN>
+Kamu adalah akademisi yang berpengalaman mempublikasikan di jurnal internasional
+dan membantu mahasiswa mengonversi skripsi mereka menjadi artikel jurnal.
+</PERAN>
+
+<ANALISIS_TARGET_JURNAL>
+Sebelum menulis, tentukan profil target jurnal berdasarkan input TARGET_JURNAL:
+
+Jika Sinta 1/Sinta 2:
+  - Bahasa: Indonesia atau Inggris (sesuai kebijakan jurnal)
+  - Panjang: 4.000-7.000 kata
+  - Gaya: Akademik formal, sitasi standar Indonesia (APA/IEEE)
+  - Fokus kontribusi: relevansi untuk konteks Indonesia
+
+Jika Scopus Q1/Q2 atau IEEE/Springer:
+  - Bahasa: Inggris (WAJIB)
+  - Panjang: 6.000-9.000 kata
+  - Gaya: International academic English, active voice dominan
+  - Fokus kontribusi: novelty global, perbandingan dengan state-of-the-art internasional
+  - WAJIB: explicit contribution statement ("The main contributions of this paper are:")
+
+Jika tidak jelas: tanyakan atau asumsikan Sinta 2 dan sebutkan asumsi ini.
+</ANALISIS_TARGET_JURNAL>
+
+<PANDUAN_KONVERSI_STRUKTUR>
+Skripsi memiliki 5 bab. Jurnal memiliki struktur berbeda.
+Lakukan konversi berikut:
+
+BAB 1 SKRIPSI → INTRODUCTION jurnal
+  - Pangkas menjadi 3-4 paragraf
+  - Paragraf 1: konteks dan masalah
+  - Paragraf 2-3: review singkat penelitian terkait dan gap
+  - Paragraf terakhir: kontribusi penelitian + struktur paper
+
+BAB 2 SKRIPSI → Bagian RELATED WORK / LITERATURE REVIEW
+  - Pangkas menjadi 1-2 halaman, fokus pada yang langsung relevan
+  - Ubah dari "ringkasan per paper" menjadi "sintesis per tema"
+
+BAB 3 SKRIPSI → METHODOLOGY
+  - Pertahankan detail teknis yang diperlukan untuk reproducibility
+  - Hapus penjelasan teori dasar yang sudah diketahui pembaca jurnal
+
+BAB 4 SKRIPSI → RESULTS & DISCUSSION
+  - Ini bagian terpenting — pertahankan atau perluas
+  - Tambahkan perbandingan dengan baseline/state-of-the-art yang lebih kuat
+
+BAB 5 SKRIPSI → CONCLUSION
+  - Pangkas menjadi 1 halaman
+  - Fokus pada kontribusi dan future work
+
+HILANGKAN dari jurnal:
+  - Halaman sampul, lembar pengesahan, kata pengantar
+  - Sub-bab tentang latar belakang institusi
+  - Penjelasan panjang tentang teori yang sudah well-known
+</PANDUAN_KONVERSI_STRUKTUR>
+
+<ATURAN_PENULISAN>
+- Setiap klaim harus didukung sitasi atau data dari penelitian ini
+- Bandingkan hasil dengan minimal 3 penelitian sebelumnya secara kuantitatif
+- Gunakan hedging language yang tepat: "suggests", "indicates", bukan "proves"
+- Abstract jurnal: 150-200 kata, harus berdiri sendiri (tanpa referensi ke badan paper)
+- Sertakan explicit limitation section di Discussion or Conclusion
+</ATURAN_PENULISAN>
+
+<FORMAT_OUTPUT>
+Hasilkan outline manuskrip jurnal yang lengkap dengan:
+1. Judul yang dioptimasi untuk SEO akademik (mengandung keyword utama)
+2. Draf setiap bagian sesuai panduan konversi di atas
+3. Daftar modifikasi yang perlu dilakukan penulis (hal yang tidak bisa dilakukan AI)
+4. Estimasi panjang total dan kesesuaian dengan target jurnal
+</FORMAT_OUTPUT>`
+        };
+
+        function render(id) {
+            const v = (vid) => document.getElementById('in-' + vid)?.value || '';
+            const set = (tid, p) => { const el = document.getElementById(tid); if (el) el.innerText = p; };
+            const dnaStr = `DOMAIN: ${store.dna.domain}\nROOT_PROBLEM: ${store.dna.problem}\nRESEARCH_GAP: ${store.dna.gap}\nOBJECTIVE: ${store.dna.objective}\nMETHODOLOGY: ${store.dna.method}\nNOVELTY: ${store.dna.novelty}\nSUCCESS_METRICS: ${store.dna.metrics}\nTECH_STACK: ${store.dna.stack}`;
+
+            if (id === 'init') set('f-init-pre', templates.init(v('init-ide')));
+            else if (id.endsWith('-a')) {
+                const ch = id.split('-')[0];
+                set('r-' + ch + '-pre', templates.audit(dnaStr, v(ch + '-a-n'), ch, v(ch + '-a-note'), v(ch + '-a-ref')));
+            }
+            else if (id.endsWith('-f')) {
+                const ch = id.split('-')[0];
+                set('f-' + ch + '-pre', templates.synthesis(dnaStr, v(ch + '-f-n'), v(ch + '-f-audit'), ch, v(ch + '-f-note')));
+            }
+            else if (id === 'b5') set('f-b5-pre', templates.b5(dnaStr, v('b5-res'), v('b5-note')));
+            else if (id === 'abs') set('f-abs-pre', templates.abs(dnaStr, v('abs-res')));
+            else if (id === 'sid-s') set('f-sid-pre', templates.sid_s(dnaStr, v('sid-s-n')));
+            else if (id === 'sid-p') set('f-ppt-pre', templates.sid_p(dnaStr, v('sid-p-n')));
+            else if (id === 'pub') set('f-pub-pre', templates.pub(dnaStr, v('pub-target'), v('pub-style'), v('pub-n')));
+            updateIntegrity();
+        }
+
+        function syncDNA() {
+            const get = (id) => document.getElementById('dna-' + id).value;
+            store.dna = {
+                domain: get('domain'),
+                problem: get('problem'),
+                gap: get('gap'),
+                objective: get('objective'),
+                method: get('method'),
+                novelty: get('novelty'),
+                metrics: get('metrics'),
+                stack: get('stack')
+            };
+            showToast('DNA DISINKRONKAN');
+            ['init', 'b1-a', 'b1-f', 'b2-a', 'b2-f', 'b3-a', 'b3-f', 'b4-a', 'b4-f', 'b5', 'abs', 'sid-s', 'sid-p', 'pub'].forEach(render);
+        }
+
+        function sw(name) {
+            document.querySelectorAll('.nav-item').forEach(b => {
+                b.classList.remove('bg-blue-50', 'text-blue-600', 'font-bold');
+                b.classList.add('text-slate-500', 'hover:bg-slate-50', 'hover:text-slate-900');
+            });
+            document.getElementById('t-' + name)?.classList.add('bg-blue-50', 'text-blue-600', 'font-bold');
+            document.getElementById('t-' + name)?.classList.remove('text-slate-500', 'hover:bg-slate-50');
+
+            document.querySelectorAll('.lg\\:hidden > div').forEach(b => {
+                b.classList.remove('bg-blue-50', 'text-blue-600', 'font-bold');
+                b.classList.add('text-slate-500');
+            });
+            document.getElementById('m-' + name)?.classList.add('bg-blue-50', 'text-blue-600', 'font-bold');
+            document.getElementById('m-' + name)?.classList.remove('text-slate-500');
+
+            document.querySelectorAll('.panel').forEach(p => p.classList.add('hidden'));
+            document.getElementById('p-' + name)?.classList.remove('hidden');
+
+            const titles = { guide: ['Beranda', 'Sistem audit skripsi.'], init: ['DNA Riset', 'Data dasar penelitian.'], b1: ['Bab 1', 'Pendahuluan.'], b2: ['Bab 2', 'Tinjauan Pustaka.'], b3: ['Bab 3', 'Metodologi.'], b4: ['Bab 4', 'Hasil & Pembahasan.'], b5: ['Bab 5', 'Penutup.'], abs: ['Abstrak', 'Ringkasan Riset.'], sid: ['Sidang', 'Persiapan Sidang Akhir.'], pub: ['Jurnal', 'Konversi Publikasi.'] };
+            const [t, d] = titles[name] || ['Skripsi Engine', ''];
+            document.getElementById('page-title').innerText = t;
+            document.getElementById('page-desc').innerText = d;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function updateIntegrity() {
+            const fs = document.querySelectorAll('textarea'); let f = 0;
+            fs.forEach(x => { if (x.value.length > 20) f++; });
+            const s = Math.min(Math.round((f / 15) * 100), 100);
+            const valEl = document.getElementById('integrity-val');
+            const circEl = document.getElementById('integrity-circle');
+            if (valEl) valEl.innerText = s + '%';
+            if (circEl) circEl.innerText = f;
+        }
+
+        function saveAll() { const d = {}; document.querySelectorAll('input, textarea').forEach(x => d[x.id] = x.value); localStorage.setItem('skripsi_pure_tail', JSON.stringify(d)); showToast('DATA TERSIMPAN'); }
+        function loadAll() { const d = JSON.parse(localStorage.getItem('skripsi_pure_tail')); if (d) { Object.keys(d).forEach(id => { if (document.getElementById(id)) document.getElementById(id).value = d[id]; }); syncDNA(); } }
+        function clearAllData() { if (confirm('HAPUS SEMUA DATA?')) { localStorage.removeItem('skripsi_pure_tail'); location.reload(); } }
+        function exportData() { const d = JSON.parse(localStorage.getItem('skripsi_pure_tail')); const blob = new Blob([JSON.stringify(d, null, 2)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'skripsi_data_pure.json'; a.click(); }
+        async function copyAndPrompt(id, btn) { try { await navigator.clipboard.writeText(document.getElementById(id).innerText); showToast('PROMPT DISALIN'); } catch (e) { } }
+        function transferAudit(ch) { document.getElementById(`in-${ch}-f-audit`).value = document.getElementById(`r-${ch}-pre`).innerText; render(`${ch}-f`); showToast('AUDIT DIPINDAH'); }
+        function showToast(m) { const t = document.getElementById('toast'); if (t) { t.innerText = m; t.style.opacity = '1'; t.style.bottom = '40px'; setTimeout(() => { t.style.opacity = '0'; t.style.bottom = '10px'; }, 2000); } }
+
+        window.onload = loadAll;
+    </script>
+</body>
+
+</html>
