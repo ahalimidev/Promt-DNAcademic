@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -310,14 +310,6 @@ MAYOR: kelemahan penting yang mengurangi kualitas akademik tetapi masih bisa dip
 MINOR: masalah redaksi, struktur mikro, konsistensi istilah, format, atau ketajaman kalimat.
 </RUBRIK_SEVERITY>`;
 
-        const auditOutput = `<FORMAT_OUTPUT_WAJIB>
-1. Verdict singkat: LAYAK, REVISI MINOR, REVISI MAJOR, atau TOLAK, plus alasan 2-3 kalimat.
-2. Temuan prioritas: maksimal 7 baris dengan kolom ID, Severity, Lokasi, Bukti, Masalah, Aksi Revisi.
-3. Strategi revisi: 3-5 langkah berurutan yang paling berdampak.
-4. Contoh perbaikan: maksimal 2 contoh, hanya untuk temuan FATAL/MAYOR.
-5. Pertanyaan klarifikasi: maksimal 3, hanya jika diperlukan.
-</FORMAT_OUTPUT_WAJIB>`;
-
         const qualityScale = `<SKALA_NILAI>
 0-39 = tidak layak akademik
 40-59 = lemah dan perlu revisi besar
@@ -326,318 +318,223 @@ MINOR: masalah redaksi, struktur mikro, konsistensi istilah, format, atau ketaja
 85-100 = sangat kuat, konsisten, dan siap diuji
 </SKALA_NILAI>`;
 
+        const evidenceGate = `<EVIDENCE_GATE>
+Kunci audit: setiap klaim penting harus masuk salah satu label ini:
+1. [BUKTI NASKAH] didukung teks/data yang ada.
+2. [ASUMSI] inferensi reviewer yang masih perlu dicek.
+3. [PERLU DATA/SITASI] belum punya dukungan memadai.
+Tampilkan hanya 3-5 klaim yang paling menentukan verdict.
+</EVIDENCE_GATE>`;
+
+        const antiOverclaim = `<ANTI_OVERCLAIM>
+Cari klaim berlebihan: novelty tidak terbukti, generalisasi melampaui data, "signifikan" tanpa uji, kesimpulan tidak didukung hasil, atau rekomendasi tidak berasal dari temuan. Beri aksi pemangkasan atau bukti yang wajib ditambah.
+</ANTI_OVERCLAIM>`;
+
+        const methodFitChecker = `<METHOD_FIT_CHECKER>
+Cek rantai: RQ -> data -> instrumen -> metode -> analisis -> metrik -> kesimpulan. Jika ada mismatch, tulis pasangan yang tidak sinkron dan revisi paling singkat.
+</METHOD_FIT_CHECKER>`;
+
+        const standardFrame = (tupoksi, cekWajib, hasilKhusus = 'Tidak ada format khusus tambahan.') => `<TUPOKSI_MODUL>
+${tupoksi}
+</TUPOKSI_MODUL>
+
+<CEK_WAJIB>
+${cekWajib}
+</CEK_WAJIB>
+
+<PRINSIP_OUTPUT>
+1. Mulai dari verdict atau hasil utama, bukan pendahuluan.
+2. Gunakan tabel jika ada lebih dari 3 temuan.
+3. Beri kritik yang spesifik: lokasi, bukti, masalah, dampak, aksi.
+4. Jangan memberi teori umum, motivasi, atau penjelasan panjang yang tidak diminta.
+5. Jika membuat revisi teks, tulis versi siap tempel dan jangan mengarang fakta baru.
+</PRINSIP_OUTPUT>
+
+<FORMAT_OUTPUT_STANDAR>
+1. VERDICT: keputusan singkat + alasan 2-3 kalimat.
+2. TEMUAN PRIORITAS: maksimal 7 baris, format ID | Severity | Bukti | Masalah | Aksi.
+3. EVIDENCE GATE: maksimal 5 klaim kunci dengan label [BUKTI NASKAH] / [ASUMSI] / [PERLU DATA/SITASI].
+4. STRATEGI REVISI: 3-5 langkah berurutan yang paling berdampak.
+5. OUTPUT KHUSUS MODUL: ikuti daftar pada OUTPUT_KHUSUS_MODUL.
+6. NEXT ACTION: satu tindakan paling penting setelah output ini.
+</FORMAT_OUTPUT_STANDAR>
+
+<OUTPUT_KHUSUS_MODUL>
+${hasilKhusus}
+</OUTPUT_KHUSUS_MODUL>`;
+
+        const buildPrompt = ({ input, task, checks = [], tupoksi, cekWajib, hasilKhusus }) => `${input.trim()}
+
+${modelProtocol(task)}
+${checks.filter(Boolean).join('\n\n')}
+
+${standardFrame(tupoksi, cekWajib, hasilKhusus)}`;
+
         const templates = {
-            dna: (info, context) => `<KONTEKS_MAHASISWA>
+            dna: (info, context) => buildPrompt({
+                input: `<KONTEKS_MAHASISWA>
 ${info || '[ISI IDENTITAS: nama, NIM, prodi, jenjang, kampus, judul sementara, bidang ilmu]'}
 </KONTEKS_MAHASISWA>
 
 <NARASI_RISET_MENTAH>
 ${context || '[ISI LATAR BELAKANG, MASALAH, TUJUAN, VARIABEL/KONSEP, METODE AWAL, DATA YANG TERSEDIA]'}
-</NARASI_RISET_MENTAH>
+</NARASI_RISET_MENTAH>`,
+                task: 'Membangun DNA riset strategis',
+                checks: [evidenceGate, methodFitChecker, antiOverclaim],
+                tupoksi: 'Bertindak sebagai arsitek DNA riset. Ubah ide mentah menjadi struktur riset yang jelas, terukur, dan siap menjadi acuan audit semua bab.',
+                cekWajib: `1. Rumuskan inti masalah dan gap riset.
+2. Sinkronkan judul, RQ, tujuan, teori, metode, data, dan novelty.
+3. Tandai klaim yang masih asumsi atau butuh sumber.
+4. Pilih metode yang paling masuk akal berdasarkan jenis data dan tujuan.`,
+                hasilKhusus: `DNA RISET: Inti Riset, Problem Statement, Gap, RQ/Tujuan/Batasan, Teori/Konstruk, Metode, Novelty, Red Flags.`
+            }),
 
-${modelProtocol('Ekstraksi DNA Riset dan desain awal audit')}
-
-<PERAN>
-Anda adalah konsultan riset senior, metodolog, dan dosen pembimbing akademik. Tugas Anda adalah mengubah narasi mentah mahasiswa menjadi DNA Riset yang presisi, terukur, dan menjadi standar acuan untuk audit semua bab.
-</PERAN>
-
-<TUGAS_UTAMA>
-1. Ekstrak inti masalah penelitian, konteks empiris, gap ilmiah, tujuan, pertanyaan penelitian, dan kontribusi yang mungkin.
-2. Uji apakah judul, masalah, tujuan, RQ, teori, metode, data, dan novelty sudah saling mendukung.
-3. Bedakan mana fakta yang sudah didukung input dan mana yang masih dugaan.
-4. Buat rencana verifikasi kondisi terkini: database/sumber yang harus dicek, kata kunci, rentang tahun, dan jenis literatur prioritas.
-5. Jangan membuat klaim novelty final tanpa bukti literatur.
-</TUGAS_UTAMA>
-
-<FORMAT_OUTPUT>
-# DNA RISET v6.0
-## 1. Inti Riset
-## 2. Problem Statement
-## 3. Gap dan Bukti yang Harus Dicari
-## 4. RQ, Tujuan, dan Batasan
-## 5. Teori/Konstruk Kunci
-## 6. Metode yang Paling Tepat
-## 7. Novelty/Kontribusi yang Defensible
-## 8. Red Flags dan Pertanyaan Klarifikasi
-</FORMAT_OUTPUT>`,
-
-            b1: (dna, text) => `<KONSTITUSI_DNA>
+            b1: (dna, text) => buildPrompt({
+                input: `<KONSTITUSI_DNA>
 ${dna || '[TEMPEL HASIL FASE 0: DNA RISET]'}
 </KONSTITUSI_DNA>
 
 <NASKAH_BAB_1>
 ${text || '[TEMPEL BAB 1: PENDAHULUAN]'}
-</NASKAH_BAB_1>
+</NASKAH_BAB_1>`,
+                task: 'Audit Bab 1 - Pendahuluan',
+                checks: [severityRubric, evidenceGate, antiOverclaim, qualityScale],
+                tupoksi: 'Reviewer Bab 1. Fokus hanya pada logika masalah, urgensi, gap, tujuan, manfaat, batasan, dan arah riset.',
+                cekWajib: `1. Cek alur konteks -> masalah -> gap -> tujuan.
+2. Cek bukti empiris dan klaim terbaru.
+3. Cek sinkronisasi rumusan masalah, tujuan, manfaat, dan batasan.
+4. Tandai kalimat normatif, bombastis, atau tidak operasional.`,
+                hasilKhusus: 'Skor Bab 1: 0-100 dan status kesiapan lanjut ke Bab 2.'
+            }),
 
-${modelProtocol('Audit Bab 1 - Pendahuluan')}
-${severityRubric}
-
-<PERAN>
-Anda adalah profesor pembimbing dan reviewer jurnal yang menguji apakah Bab 1 sudah memiliki logika masalah yang kuat, gap yang sah, urgensi empiris, dan arah riset yang konsisten.
-</PERAN>
-
-<FOKUS_AUDIT>
-1. Latar belakang: apakah bergerak dari konteks luas ke masalah spesifik secara logis.
-2. Bukti empiris: apakah fenomena didukung data, laporan resmi, studi terdahulu, atau observasi yang dapat diverifikasi.
-3. Gap: apakah gap dinyatakan sebagai masalah ilmiah, bukan sekadar "belum banyak diteliti".
-4. Rumusan masalah, tujuan, manfaat: cek keselarasan satu-ke-satu.
-5. Batasan dan definisi: cek apakah ruang lingkup cukup jelas.
-6. Klaim terbaru: tandai klaim yang perlu verifikasi literatur/data terkini.
-7. Bahasa akademik: tandai kalimat normatif, bombastis, klise, atau tidak operasional.
-</FOKUS_AUDIT>
-
-${auditOutput}
-${qualityScale}
-
-Tambahkan skor Bab 1: 0-100.`,
-
-            b2: (dna, text) => `<KONSTITUSI_DNA>
+            b2: (dna, text) => buildPrompt({
+                input: `<KONSTITUSI_DNA>
 ${dna || '[TEMPEL HASIL FASE 0: DNA RISET]'}
 </KONSTITUSI_DNA>
 
 <NASKAH_BAB_2>
 ${text || '[TEMPEL BAB 2: TINJAUAN PUSTAKA / LANDASAN TEORI]'}
-</NASKAH_BAB_2>
+</NASKAH_BAB_2>`,
+                task: 'Audit Bab 2 - Literatur dan teori',
+                checks: [severityRubric, evidenceGate, antiOverclaim, qualityScale],
+                tupoksi: 'Reviewer literatur. Fokus hanya pada relevansi teori, kualitas sumber, sintesis kritis, gap positioning, dan konsistensi konsep.',
+                cekWajib: `1. Bedakan ringkasan literatur dari sintesis kritis.
+2. Cek kemutakhiran dan kredibilitas sumber.
+3. Cek apakah gap Bab 2 mendukung Bab 1.
+4. Tandai referensi atau klaim literatur yang perlu diverifikasi.`,
+                hasilKhusus: 'Matriks literatur ringkas maksimal 5 baris dan skor kualitas sintesis 0-100.'
+            }),
 
-${modelProtocol('Audit Bab 2 - Literatur, teori, dan sintesis')}
-${severityRubric}
-
-<PERAN>
-Anda adalah pakar kajian literatur, bibliometrik, dan editor jurnal internasional. Anda menilai apakah Bab 2 membangun fondasi teori dan gap penelitian secara kritis.
-</PERAN>
-
-<FOKUS_AUDIT>
-1. Relevansi teori: apakah teori utama benar-benar menjawab DNA riset.
-2. Mutakhir: tandai sumber yang terlalu lama jika bidangnya bergerak cepat, serta sumber yang membutuhkan pembaruan 5 tahun terakhir.
-3. Kualitas sumber: bedakan jurnal bereputasi, prosiding, buku teks, laporan resmi, web umum, dan sumber lemah.
-4. Sintesis: cek apakah penulis hanya merangkum sumber satu per satu atau membangun argumen lintas literatur.
-5. Gap positioning: apakah gap di Bab 2 mendukung gap di Bab 1.
-6. Definisi operasional: cek konsistensi konsep, variabel, indikator, dan istilah.
-7. Anti-halusinasi: jika referensi terlihat janggal, tandai [PERLU VERIFIKASI REFERENSI].
-</FOKUS_AUDIT>
-
-<OUTPUT_TAMBAHAN>
-1. Matriks Literatur: Penulis/Tahun, Fokus, Metode, Temuan, Relevansi, Kelemahan, Hubungan dengan Riset Ini.
-2. Usulan strategi pencarian: database, Boolean keywords, rentang tahun, dan kriteria inklusi-eksklusi.
-3. Skor kualitas sintesis: 0-100.
-</OUTPUT_TAMBAHAN>
-
-${auditOutput}
-${qualityScale}`,
-
-            b3: (dna, text) => `<KONSTITUSI_DNA>
+            b3: (dna, text) => buildPrompt({
+                input: `<KONSTITUSI_DNA>
 ${dna || '[TEMPEL HASIL FASE 0: DNA RISET]'}
 </KONSTITUSI_DNA>
 
 <NASKAH_BAB_3>
 ${text || '[TEMPEL BAB 3: METODOLOGI PENELITIAN]'}
-</NASKAH_BAB_3>
+</NASKAH_BAB_3>`,
+                task: 'Audit Bab 3 - Metodologi',
+                checks: [severityRubric, evidenceGate, methodFitChecker, qualityScale],
+                tupoksi: 'Metodolog riset. Fokus hanya pada kesesuaian desain, data, sampel/subjek, instrumen, prosedur, analisis, validitas, etika, dan reprodusibilitas.',
+                cekWajib: `1. Cek kecocokan RQ, data, metode, instrumen, analisis, dan metrik.
+2. Uji apakah penelitian bisa direplikasi dari Bab 3.
+3. Cek validitas/reliabilitas atau trustworthiness.
+4. Tandai bias, confounding, leakage, missing data, dan kelemahan etika.`,
+                hasilKhusus: 'Verdict kelayakan metodologi dan skor metodologi 0-100.'
+            }),
 
-${modelProtocol('Audit Bab 3 - Metodologi, validitas, dan reprodusibilitas')}
-${severityRubric}
-
-<PERAN>
-Anda adalah metodolog riset senior yang mengevaluasi desain penelitian, validitas, reliabilitas, etika, prosedur analisis, dan reprodusibilitas.
-</PERAN>
-
-<FOKUS_AUDIT>
-1. Kesesuaian pendekatan: paradigma, desain, dan metode harus cocok dengan RQ dan tujuan.
-2. Populasi/sampel/subjek: cek logika pemilihan, ukuran, teknik sampling, kriteria inklusi-eksklusi.
-3. Instrumen/data: cek sumber data, instrumen, pedoman wawancara, kuesioner, dokumen, atau log data.
-4. Validitas dan reliabilitas/trustworthiness: cek apakah prosedur sesuai pendekatan kuantitatif, kualitatif, mixed, R&D, atau eksperimen.
-5. Prosedur analisis: harus cukup rinci untuk direplikasi.
-6. Etika riset: consent, anonimitas, izin data, risiko partisipan, dan konflik kepentingan.
-7. Ancaman validitas: bias sampling, common method bias, confounding, subjektivitas coder, missing data, atau leakage.
-</FOKUS_AUDIT>
-
-<UJI_REPRODUSIBILITAS>
-Jawab: "Apakah peneliti lain bisa mengulang penelitian ini hanya dari Bab 3?" Jika tidak, daftar informasi yang hilang.
-</UJI_REPRODUSIBILITAS>
-
-${auditOutput}
-${qualityScale}
-
-Tambahkan skor kelayakan metodologi: 0-100.`,
-
-            b4: (dna, text) => `<KONSTITUSI_DNA>
+            b4: (dna, text) => buildPrompt({
+                input: `<KONSTITUSI_DNA>
 ${dna || '[TEMPEL HASIL FASE 0: DNA RISET]'}
 </KONSTITUSI_DNA>
 
 <NASKAH_BAB_4>
 ${text || '[TEMPEL BAB 4: HASIL DAN PEMBAHASAN]'}
-</NASKAH_BAB_4>
+</NASKAH_BAB_4>`,
+                task: 'Audit Bab 4 - Hasil dan pembahasan',
+                checks: [severityRubric, evidenceGate, methodFitChecker, antiOverclaim, qualityScale],
+                tupoksi: 'Reviewer hasil. Fokus hanya pada jawaban RQ, validitas analisis, interpretasi hasil, pembahasan dengan teori/literatur, dan pembuktian kontribusi.',
+                cekWajib: `1. Petakan RQ ke data, analisis, hasil, dan pembahasan.
+2. Bedakan deskripsi angka dari interpretasi ilmiah.
+3. Cek apakah hasil sesuai metode Bab 3.
+4. Cek klaim novelty dan kesimpulan sementara agar tidak overclaim.`,
+                hasilKhusus: 'Matriks RQ-Hasil-Pembahasan maksimal 5 baris dan skor kedalaman analisis 0-100.'
+            }),
 
-${modelProtocol('Audit Bab 4 - Hasil, analisis, dan pembahasan')}
-${severityRubric}
-
-<PERAN>
-Anda adalah reviewer jurnal bereputasi yang menguji apakah hasil benar-benar menjawab RQ, analisisnya valid, dan pembahasannya memberi kontribusi ilmiah.
-</PERAN>
-
-<FOKUS_AUDIT>
-1. Jawaban RQ: petakan setiap RQ ke data, hasil, interpretasi, dan kesimpulan sementara.
-2. Kualitas analisis: bedakan deskripsi data, interpretasi, inferensi, dan spekulasi.
-3. Validitas hasil: cek apakah teknik analisis sesuai Bab 3 dan tidak overclaim.
-4. Pembahasan: cek dialog dengan teori dan studi terdahulu, bukan sekadar mengulang hasil.
-5. Visual/data: cek tabel/grafik apakah lengkap, dapat dibaca, dan tidak menyesatkan.
-6. Negative findings: cek apakah hasil yang tidak sesuai hipotesis/harapan tetap dibahas.
-7. Novelty proof: cek apakah bukti mendukung klaim kontribusi.
-</FOKUS_AUDIT>
-
-<OUTPUT_TAMBAHAN>
-Buat Matriks RQ-Hasil-Pembahasan:
-RQ | Data/Analisis | Temuan Utama | Interpretasi | Dukungan Literatur | Status Jawaban
-</OUTPUT_TAMBAHAN>
-
-${auditOutput}
-${qualityScale}
-
-Tambahkan skor kedalaman analisis: 0-100.`,
-
-            b5: (dna, text) => `<KONSTITUSI_DNA>
+            b5: (dna, text) => buildPrompt({
+                input: `<KONSTITUSI_DNA>
 ${dna || '[TEMPEL HASIL FASE 0: DNA RISET]'}
 </KONSTITUSI_DNA>
 
 <NASKAH_BAB_5>
 ${text || '[TEMPEL BAB 5: KESIMPULAN DAN SARAN]'}
-</NASKAH_BAB_5>
+</NASKAH_BAB_5>`,
+                task: 'Audit Bab 5 - Penutup',
+                checks: [severityRubric, evidenceGate, antiOverclaim, qualityScale],
+                tupoksi: 'Penguji penutup. Fokus hanya pada kesimpulan, kontribusi, keterbatasan, saran, dan kesiapan sidang.',
+                cekWajib: `1. Cek apakah setiap RQ/tujuan dijawab.
+2. Cek kesimpulan agar tidak memunculkan klaim baru.
+3. Cek apakah saran berbasis temuan dan ditujukan ke pihak yang jelas.
+4. Cek kontribusi dan keterbatasan agar spesifik.`,
+                hasilKhusus: 'Matriks Tujuan-RQ-Kesimpulan-Saran dan verdict kesiapan sidang.'
+            }),
 
-${modelProtocol('Audit Bab 5 - Kesimpulan, kontribusi, dan saran')}
-${severityRubric}
-
-<PERAN>
-Anda adalah promotor doktoral dan penguji akhir yang menilai apakah penelitian sudah tertutup secara logis, tidak overclaim, dan siap dipertahankan.
-</PERAN>
-
-<FOKUS_AUDIT>
-1. Logical closure: setiap tujuan/RQ harus dijawab oleh kesimpulan.
-2. Konsistensi: kesimpulan tidak boleh memunculkan klaim baru yang tidak ada di Bab 4.
-3. Kontribusi: pisahkan kontribusi teoritis, metodologis, praktis, dan kebijakan.
-4. Keterbatasan: harus jujur, spesifik, dan terkait desain riset.
-5. Saran: harus operasional, berbasis temuan, dan ditujukan ke pihak yang jelas.
-6. Kesiapan sidang: prediksi pertanyaan penguji dan jawaban defensible.
-</FOKUS_AUDIT>
-
-<OUTPUT_TAMBAHAN>
-Buat Matriks Tujuan-RQ-Kesimpulan-Saran:
-Tujuan/RQ | Bukti Bab 4 | Kesimpulan | Saran | Status Sinkron
-</OUTPUT_TAMBAHAN>
-
-${auditOutput}
-${qualityScale}
-
-Tambahkan verdict kesiapan sidang.`,
-
-            global: (dna, verdicts) => `<KONSTITUSI_DNA>
+            global: (dna, verdicts) => buildPrompt({
+                input: `<KONSTITUSI_DNA>
 ${dna || '[TEMPEL HASIL FASE 0: DNA RISET]'}
 </KONSTITUSI_DNA>
 
 <HASIL_AUDIT_BAB_1_SAMPAI_5>
 ${verdicts || '[TEMPEL RINGKASAN/TEMUAN DARI AUDIT BAB 1-5]'}
-</HASIL_AUDIT_BAB_1_SAMPAI_5>
+</HASIL_AUDIT_BAB_1_SAMPAI_5>`,
+                task: 'Audit konsistensi global lintas bab',
+                checks: [severityRubric, methodFitChecker, antiOverclaim],
+                tupoksi: 'Auditor sistemik. Fokus hanya pada kontradiksi dan ketidaksinkronan lintas bab.',
+                cekWajib: `1. Cek rantai judul -> masalah -> RQ -> metode -> hasil -> kesimpulan.
+2. Cek istilah, variabel, unit analisis, dan batasan lintas bab.
+3. Cek apakah novelty awal terbukti di pembahasan.
+4. Urutkan revisi dari yang paling mengunci validitas.`,
+                hasilKhusus: 'Verdict konsistensi dan maksimal 10 titik inkonsistensi prioritas.'
+            }),
 
-${modelProtocol('Audit konsistensi global lintas bab')}
-${severityRubric}
-
-<PERAN>
-Anda adalah auditor akademik sistemik. Fokus Anda adalah menemukan kontradiksi lintas bab yang sering lolos dalam review per bab.
-</PERAN>
-
-<UJI_KONSISTENSI_12_TITIK>
-1. Judul -> masalah -> tujuan -> RQ
-2. RQ -> teori -> variabel/konstruk
-3. RQ -> metode -> instrumen/data
-4. Populasi/sampel/subjek -> teknik analisis
-5. Definisi konsep -> indikator -> analisis
-6. Gap Bab 1 -> sintesis Bab 2
-7. Metode Bab 3 -> hasil Bab 4
-8. Hasil Bab 4 -> kesimpulan Bab 5
-9. Novelty awal -> bukti pembahasan
-10. Batasan riset -> klaim kesimpulan
-11. Manfaat penelitian -> saran praktis/kebijakan
-12. Terminologi, variabel, dan satuan analisis lintas bab
-</UJI_KONSISTENSI_12_TITIK>
-
-<FORMAT_OUTPUT>
-1. Verdict konsistensi: KONSISTEN, CUKUP KONSISTEN, INKONSISTEN MAYOR, atau GAGAL KONSISTENSI.
-2. Maksimal 10 titik inkonsistensi prioritas: titik uji, bukti, risiko, aksi revisi.
-3. Urutan revisi paling efisien: maksimal 5 langkah.
-</FORMAT_OUTPUT>`,
-
-            novelty: (dna, report) => `<KONSTITUSI_DNA>
+            novelty: (dna, report) => buildPrompt({
+                input: `<KONSTITUSI_DNA>
 ${dna || '[TEMPEL HASIL FASE 0: DNA RISET]'}
 </KONSTITUSI_DNA>
 
 <LAPORAN_AUDIT_TERDAHULU>
 ${report || '[TEMPEL HASIL AUDIT KONSISTENSI / RINGKASAN REVIEW]'}
-</LAPORAN_AUDIT_TERDAHULU>
+</LAPORAN_AUDIT_TERDAHULU>`,
+                task: 'Audit novelty dan kontribusi ilmiah',
+                checks: [severityRubric, evidenceGate, antiOverclaim],
+                tupoksi: 'Editor novelty. Fokus hanya pada kebaruan, kontribusi, risiko overclaim, dan positioning publikasi.',
+                cekWajib: `1. Identifikasi jenis novelty: teoritis, metodologis, empiris, konteks, data, model, atau instrumen.
+2. Pisahkan novelty asli dari replikasi/konteks baru.
+3. Cek bukti naskah dan bukti eksternal yang masih wajib dicari.
+4. Tentukan positioning publikasi realistis.`,
+                hasilKhusus: 'Verdict novelty, maksimal 5 klaim novelty, bukti wajib dicari, dan positioning publikasi.'
+            }),
 
-${modelProtocol('Audit novelty dan kontribusi ilmiah')}
-${severityRubric}
-
-<PERAN>
-Anda adalah editor jurnal internasional dan pakar pemetaan kontribusi ilmiah. Anda menilai kebaruan secara ketat, bukan berdasarkan klaim penulis.
-</PERAN>
-
-<FOKUS_AUDIT>
-1. Identifikasi jenis novelty: teoritis, metodologis, empiris, konteks, data, model, instrumen, atau aplikasi.
-2. Bedakan novelty asli, gap kecil, replikasi kontekstual, dan kontribusi praktis.
-3. Jika akses web/Deep Research tersedia, verifikasi klaim novelty dengan literatur terbaru dan sumber primer.
-4. Jika akses web tidak tersedia, buat protokol verifikasi novelty yang bisa dijalankan mahasiswa.
-5. Nilai potensi publikasi: jurnal nasional, Sinta, Scopus Q4-Q1, atau belum layak publikasi.
-</FOKUS_AUDIT>
-
-<FORMAT_OUTPUT>
-1. Verdict novelty: KUAT, CUKUP, LEMAH, atau TIDAK TERBUKTI.
-2. Maksimal 5 klaim novelty: jenis, bukti naskah, risiko overclaim, cara memperkuat.
-3. Bukti eksternal yang wajib dicari: maksimal 5 butir.
-4. Positioning publikasi yang paling realistis.
-</FORMAT_OUTPUT>`,
-
-            final: (dna, all) => `<KONSTITUSI_DNA>
+            final: (dna, all) => buildPrompt({
+                input: `<KONSTITUSI_DNA>
 ${dna || '[TEMPEL HASIL FASE 0: DNA RISET]'}
 </KONSTITUSI_DNA>
 
 <RINGKASAN_SEMUA_REVIEW>
 ${all || '[TEMPEL SEMUA TEMUAN / VERDICT BAB / HASIL AUDIT KONSISTENSI DAN NOVELTY]'}
-</RINGKASAN_SEMUA_REVIEW>
+</RINGKASAN_SEMUA_REVIEW>`,
+                task: 'Laporan evaluasi final penelitian',
+                checks: [severityRubric, qualityScale, evidenceGate, methodFitChecker, antiOverclaim],
+                tupoksi: 'Komite evaluasi final. Fokus hanya pada keputusan akhir, skor, risiko utama, dan roadmap revisi.',
+                cekWajib: `1. Sintesis semua temuan tanpa mengulang panjang.
+2. Kelompokkan isu blocking, mayor, dan minor.
+3. Hitung scorecard ringkas 0-100.
+4. Susun roadmap revisi 7-14 hari.`,
+                hasilKhusus: 'Verdict utama, scorecard, maksimal 10 temuan kritis, roadmap revisi, dan pertanyaan sidang berisiko.'
+            }),
 
-${modelProtocol('Laporan evaluasi final penelitian')}
-${severityRubric}
-${qualityScale}
-
-<PERAN>
-Anda adalah komite sidang yang menghasilkan laporan evaluasi final, objektif, dan dapat dipakai sebagai roadmap revisi.
-</PERAN>
-
-<TUGAS>
-1. Sintesis semua temuan menjadi laporan final yang tidak berulang.
-2. Kelompokkan isu berdasarkan prioritas revisi: wajib sebelum sidang, penting sebelum publikasi, dan opsional.
-3. Hitung scorecard 0-100 untuk tiap dimensi.
-4. Berikan keputusan akhir dan rencana revisi 7-14 hari.
-</TUGAS>
-
-<DIMENSI_SCORECARD>
-1. Kejelasan masalah dan urgensi
-2. Kekuatan gap dan novelty
-3. Kualitas literatur dan teori
-4. Ketepatan metodologi
-5. Kualitas analisis dan pembahasan
-6. Konsistensi lintas bab
-7. Etika dan transparansi data
-8. Kesiapan sidang/publikasi
-</DIMENSI_SCORECARD>
-
-<FORMAT_OUTPUT>
-# Laporan Evaluasi Final
-## 1. Verdict Utama
-## 2. Scorecard
-## 3. Maksimal 10 Temuan Kritis
-## 4. Roadmap Revisi 7-14 Hari
-## 5. Pertanyaan Sidang Paling Berisiko
-</FORMAT_OUTPUT>`,
-
-            weakness: (dna, text, scope) => `<KONSTITUSI_DNA>
+            weakness: (dna, text, scope) => buildPrompt({
+                input: `<KONSTITUSI_DNA>
 ${dna || '[TEMPEL HASIL FASE 0: DNA RISET]'}
 </KONSTITUSI_DNA>
 
@@ -647,60 +544,34 @@ ${scope || 'FULL MANUSCRIPT'}
 
 <NASKAH_UNTUK_SCAN>
 ${text || '[TEMPEL NASKAH YANG MAU DIUJI SECARA AGRESIF]'}
-</NASKAH_UNTUK_SCAN>
+</NASKAH_UNTUK_SCAN>`,
+                task: 'Scanner kelemahan fatal dan simulasi penguji',
+                checks: [severityRubric, evidenceGate, methodFitChecker, antiOverclaim],
+                tupoksi: 'Penguji kritis. Fokus hanya pada titik runtuh argumen yang bisa menyerang validitas riset.',
+                cekWajib: `1. Cari kelemahan yang benar-benar bisa dipakai penguji.
+2. Sertakan bukti naskah atau alasan metodologis.
+3. Jangan menyerang pribadi penulis.
+4. Berikan cara menutup celah secara praktis.`,
+                hasilKhusus: 'Top 7 kelemahan fatal, 8 pertanyaan sidang tersulit, jawaban defensible singkat, dan verdict risiko sidang.'
+            }),
 
-${modelProtocol('Scanner kelemahan fatal dan simulasi penguji')}
-${severityRubric}
-
-<PERAN>
-Anda adalah penguji sidang yang sangat ketat. Tujuan Anda adalah menemukan titik runtuh argumen, bukan memberi pujian.
-</PERAN>
-
-<ATURAN_KRITIK>
-1. Fokus pada kelemahan nyata yang bisa dipakai penguji untuk menyerang validitas riset.
-2. Jangan menyerang pribadi penulis.
-3. Setiap kritik harus disertai bukti dari naskah atau alasan metodologis.
-4. Jangan hanya berkata "kurang jelas"; jelaskan apa yang kurang, dampaknya, dan cara memperbaikinya.
-</ATURAN_KRITIK>
-
-<FORMAT_OUTPUT>
-1. Top 7 Kelemahan Fatal: ID, Severity, Bukti, Serangan Penguji, Cara Menutup Celah.
-2. 8 Pertanyaan Sidang Tersulit.
-3. Jawaban defensible singkat untuk tiap pertanyaan.
-4. Verdict risiko sidang: RENDAH, SEDANG, TINGGI, atau KRITIS.
-</FORMAT_OUTPUT>`,
-
-            validate: (old, newtxt) => `<TEMUAN_LAMA>
+            validate: (old, newtxt) => buildPrompt({
+                input: `<TEMUAN_LAMA>
 ${old || '[TEMPEL DAFTAR TEMUAN / KOMENTAR DOSEN / HASIL AUDIT LAMA]'}
 </TEMUAN_LAMA>
 
 <NASKAH_REVISI_BARU>
 ${newtxt || '[TEMPEL NASKAH HASIL REVISI]'}
-</NASKAH_REVISI_BARU>
-
-${modelProtocol('Validasi perbaikan revisi')}
-
-<PERAN>
-Anda adalah validator final yang melakukan gap analysis antara temuan lama dan naskah revisi baru.
-</PERAN>
-
-<TUGAS>
-1. Petakan setiap temuan lama ke bagian revisi yang relevan.
-2. Nilai status penyelesaian: TUNTAS, SEBAGIAN, BELUM, atau SALAH ARAH.
-3. Berikan bukti dari naskah revisi.
-4. Jelaskan sisa perbaikan yang masih diperlukan.
-5. Jangan meloloskan revisi hanya karena ada teks baru; nilai apakah substansinya benar-benar memperbaiki masalah.
-</TUGAS>
-
-<FORMAT_OUTPUT>
-Tabel Validasi:
-ID Temuan Lama | Inti Masalah | Bukti Revisi | Status | Catatan Validator | Aksi Lanjutan
-
-Akhiri dengan:
-1. Persentase penyelesaian revisi.
-2. Maksimal 5 temuan yang masih blocking.
-3. Verdict: REVISI TUNTAS, REVISI SEBAGIAN, atau REVISI BELUM LAYAK.
-</FORMAT_OUTPUT>`
+</NASKAH_REVISI_BARU>`,
+                task: 'Validasi perbaikan revisi',
+                checks: [evidenceGate],
+                tupoksi: 'Validator revisi. Fokus hanya pada apakah temuan lama sudah dijawab oleh naskah revisi.',
+                cekWajib: `1. Petakan setiap temuan lama ke bukti revisi.
+2. Nilai status: TUNTAS, SEBAGIAN, BELUM, atau SALAH ARAH.
+3. Jangan meloloskan revisi hanya karena ada teks baru.
+4. Tulis aksi lanjutan paling singkat.`,
+                hasilKhusus: 'Tabel validasi, persentase penyelesaian, maksimal 5 blocking issue, dan verdict revisi.'
+            })
         };
 
         function sw(tab) {
@@ -779,3 +650,4 @@ Akhiri dengan:
     </script>
 </body>
 </html>
+
