@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Research Prompt Mahasiswa</title>
-    <meta name="description" content="Platform penyusunan skripsi dan tesis berbasis AI untuk mahasiswa. Bantu menyusun Bab 1-5, abstrak, dan persiapan sidang secara strategis.">
+    <meta name="description"
+        content="Platform penyusunan skripsi dan tesis berbasis AI untuk mahasiswa. Bantu menyusun Bab 1-5, abstrak, dan persiapan sidang secara strategis.">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             --brand-slate: #0f172a;
@@ -46,19 +50,23 @@
             .sidebar {
                 transform: translateX(-100%);
             }
+
             .sidebar.open {
                 transform: translateX(0);
             }
+
             .main-content {
                 margin-left: 0;
             }
+
             .sidebar-overlay {
                 display: none;
                 position: fixed;
                 inset: 0;
-                background: rgba(0,0,0,0.5);
+                background: rgba(0, 0, 0, 0.5);
                 z-index: 45;
             }
+
             .sidebar-overlay.show {
                 display: block;
             }
@@ -282,6 +290,7 @@
         }
     </style>
 </head>
+
 <body>
     <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
     <aside id="sidebar" class="sidebar">
@@ -300,44 +309,53 @@
 
         <nav class="pb-8">
             <div class="nav-group-title">Tahap Awal</div>
-            <div onclick="sw('dna')" id="t-dna" class="nav-item active"><i class="ti ti-dna"></i> Fase 0: DNA Riset</div>
+            <div onclick="sw('dna')" id="t-dna" class="nav-item active"><i class="ti ti-dna"></i> Fase 0: DNA Riset
+            </div>
 
             <div class="nav-group-title">Penyusunan Bab</div>
             <div onclick="sw('b1')" id="t-b1" class="nav-item"><i class="ti ti-file-text"></i> Bab 1: Pendahuluan</div>
             <div onclick="sw('b2')" id="t-b2" class="nav-item"><i class="ti ti-books"></i> Bab 2: Pustaka</div>
             <div onclick="sw('b3')" id="t-b3" class="nav-item"><i class="ti ti-flask"></i> Bab 3: Metodologi</div>
-            <div onclick="sw('b4')" id="t-b4" class="nav-item"><i class="ti ti-chart-bar"></i> Bab 4: Hasil & Bahasan</div>
+            <div onclick="sw('b4')" id="t-b4" class="nav-item"><i class="ti ti-chart-bar"></i> Bab 4: Hasil & Bahasan
+            </div>
             <div onclick="sw('b5')" id="t-b5" class="nav-item"><i class="ti ti-door-exit"></i> Bab 5: Penutup</div>
 
             <div class="nav-group-title">Finalisasi</div>
             <div onclick="sw('abs')" id="t-abs" class="nav-item"><i class="ti ti-language"></i> Abstrak</div>
-            <div onclick="sw('sidang')" id="t-sidang" class="nav-item"><i class="ti ti-presentation-analytics"></i> Persiapan Sidang</div>
+            <div onclick="sw('sidang')" id="t-sidang" class="nav-item"><i class="ti ti-presentation-analytics"></i>
+                Persiapan Sidang</div>
             <div onclick="sw('jurnal')" id="t-jurnal" class="nav-item"><i class="ti ti-news"></i> Konversi Jurnal</div>
 
             <div class="nav-group-title">Revisi</div>
-            <div onclick="sw('revisi')" id="t-revisi" class="nav-item text-emerald-300"><i class="ti ti-shield-check"></i> Validasi Revisi</div>
+            <div onclick="sw('revisi')" id="t-revisi" class="nav-item text-emerald-300"><i
+                    class="ti ti-shield-check"></i> Validasi Revisi</div>
         </nav>
 
         <div class="mt-auto p-6 border-t border-slate-800">
-            <a href="dosen_pembimbing_audit.html" class="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white transition-colors">
+            <a href="dosen.html"
+                class="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white transition-colors">
                 <i class="ti ti-external-link"></i> Buka Mode Dosen
             </a>
         </div>
     </aside>
 
     <main class="main-content">
-        <header class="bg-white border-b border-slate-200 px-6 py-4 flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center sticky top-0 z-40">
+        <header
+            class="bg-white border-b border-slate-200 px-6 py-4 flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center sticky top-0 z-40">
             <div class="flex items-center gap-4">
-                <button onclick="toggleSidebar()" class="lg:hidden p-2 -ml-2 text-slate-600 hover:bg-slate-100 rounded-lg">
+                <button onclick="toggleSidebar()"
+                    class="lg:hidden p-2 -ml-2 text-slate-600 hover:bg-slate-100 rounded-lg">
                     <i class="ti ti-menu-2 text-xl"></i>
                 </button>
                 <div>
                     <h2 id="header-title" class="font-bold text-slate-800 text-xl leading-none">Fase 0: DNA Riset</h2>
-                    <p id="header-subtitle" class="text-xs text-slate-500 font-medium mt-1">Membangun fondasi skripsi/tesis yang jelas</p>
+                    <p id="header-subtitle" class="text-xs text-slate-500 font-medium mt-1">Membangun fondasi
+                        skripsi/tesis yang jelas</p>
                 </div>
             </div>
             <div class="flex items-center gap-3">
-                <span id="session-state" class="status-pill status-info"><i class="ti ti-device-floppy"></i> Sesi tersimpan</span>
+                <span id="session-state" class="status-pill status-info"><i class="ti ti-device-floppy"></i> Sesi
+                    tersimpan</span>
                 <button onclick="copyPrompt()" class="btn-primary flex items-center justify-center gap-2">
                     <i class="ti ti-copy"></i> Salin Prompt
                 </button>
@@ -353,15 +371,18 @@
                         <span class="model-chip"><i class="ti ti-bolt"></i> Gemini</span>
                     </div>
                     <p class="text-xs text-slate-600 leading-relaxed">
-                        Template ini dibuat untuk mahasiswa: menyusun draft, memperbaiki naskah, menyiapkan sidang, dan mengubah skripsi/tesis menjadi artikel tanpa mengarang data atau referensi.
+                        Template ini dibuat untuk mahasiswa: menyusun draft, memperbaiki naskah, menyiapkan sidang, dan
+                        mengubah skripsi/tesis menjadi artikel tanpa mengarang data atau referensi.
                     </p>
                 </div>
 
                 <div class="input-help flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div id="input-guide">
-                        <strong>Format input aktif:</strong> isi data inti, konteks, batasan, dan target output. Semakin rapi input, semakin akurat prompt yang dihasilkan.
+                        <strong>Format input aktif:</strong> isi data inti, konteks, batasan, dan target output. Semakin
+                        rapi input, semakin akurat prompt yang dihasilkan.
                     </div>
-                    <button onclick="clearActiveForm()" class="btn-secondary flex items-center justify-center gap-2 shrink-0" type="button">
+                    <button onclick="clearActiveForm()"
+                        class="btn-secondary flex items-center justify-center gap-2 shrink-0" type="button">
                         <i class="ti ti-eraser"></i> Kosongkan Form
                     </button>
                 </div>
@@ -370,22 +391,27 @@
                     <div class="card space-y-4">
                         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <div>
-                                <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Status DNA Aktif</label>
+                                <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Status DNA
+                                    Aktif</label>
                                 <p class="text-xs text-slate-500 mt-1">Tersimpan otomatis dan dipakai lintas modul.</p>
                             </div>
                             <div class="flex flex-wrap items-center gap-2">
-                                <span id="dna-save-state" class="status-pill status-warn"><i class="ti ti-alert-circle"></i> Belum lengkap</span>
-                                <button onclick="resetStoredData()" class="btn-secondary flex items-center gap-2" type="button">
+                                <span id="dna-save-state" class="status-pill status-warn"><i
+                                        class="ti ti-alert-circle"></i> Belum lengkap</span>
+                                <button onclick="resetStoredData()" class="btn-secondary flex items-center gap-2"
+                                    type="button">
                                     <i class="ti ti-refresh"></i> Reset Simpanan
                                 </button>
                             </div>
                         </div>
 
-                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Identitas Mahasiswa dan Target Riset</label>
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Identitas Mahasiswa dan
+                            Target Riset</label>
                         <div id="dna-info-form" class="structured-grid"></div>
                         <textarea id="dna-info" class="raw-data" rows="6"></textarea>
 
-                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Ide dan Konteks Riset</label>
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Ide dan Konteks
+                            Riset</label>
                         <div id="dna-context-form" class="structured-grid"></div>
                         <textarea id="dna-context" class="raw-data" rows="14"></textarea>
 
@@ -398,21 +424,29 @@
                 <div id="p-editor" class="panel space-y-6">
                     <div class="card space-y-4">
                         <div class="flex flex-col">
-                            <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">DNA Riset Aktif</label>
-                            <p class="text-[10px] text-slate-400 mb-2 leading-tight italic font-medium px-1">Diambil otomatis dari Fase 0, jadi Bab 1-5 memakai konteks yang sama.</p>
+                            <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">DNA Riset
+                                Aktif</label>
+                            <p class="text-[10px] text-slate-400 mb-2 leading-tight italic font-medium px-1">Diambil
+                                otomatis dari Fase 0, jadi Bab 1-5 memakai konteks yang sama.</p>
                         </div>
                         <textarea id="editor-dna" rows="7" readonly></textarea>
 
                         <div class="flex flex-col">
-                            <label id="editor-note-label" class="text-xs font-bold text-slate-500 uppercase tracking-wider">Catatan Pembimbing / Target Perbaikan</label>
-                            <p class="text-[10px] text-slate-400 mb-2 leading-tight italic font-medium">Opsional: tempel catatan pembimbing, arahan penguji, atau target yang ingin diperbaiki...</p>
+                            <label id="editor-note-label"
+                                class="text-xs font-bold text-slate-500 uppercase tracking-wider">Catatan Pembimbing /
+                                Target Perbaikan</label>
+                            <p class="text-[10px] text-slate-400 mb-2 leading-tight italic font-medium">Opsional: tempel
+                                catatan pembimbing, arahan penguji, atau target yang ingin diperbaiki...</p>
                         </div>
                         <div id="editor-note-form" class="structured-grid"></div>
                         <textarea id="editor-note" class="raw-data" rows="4"></textarea>
 
                         <div class="flex flex-col">
-                            <label id="editor-target-label" class="text-xs font-bold text-slate-500 uppercase tracking-wider">Bahan / Draft Bab</label>
-                            <p class="text-[10px] text-slate-400 mb-2 leading-tight italic font-medium">Tempel draft, poin-poin, data, atau bahan bab yang ingin disusun/diperbaiki...</p>
+                            <label id="editor-target-label"
+                                class="text-xs font-bold text-slate-500 uppercase tracking-wider">Bahan / Draft
+                                Bab</label>
+                            <p class="text-[10px] text-slate-400 mb-2 leading-tight italic font-medium">Tempel draft,
+                                poin-poin, data, atau bahan bab yang ingin disusun/diperbaiki...</p>
                         </div>
                         <div id="editor-text-form" class="structured-grid"></div>
                         <textarea id="editor-text" class="raw-data" rows="14"></textarea>
@@ -421,11 +455,13 @@
 
                 <div id="p-multi" class="panel space-y-6">
                     <div class="card space-y-4">
-                        <label id="multi-label-1" class="text-xs font-bold text-slate-500 uppercase tracking-wider">Input A</label>
+                        <label id="multi-label-1"
+                            class="text-xs font-bold text-slate-500 uppercase tracking-wider">Input A</label>
                         <div id="multi-input-1-form" class="structured-grid"></div>
                         <textarea id="multi-input-1" class="raw-data" rows="10"></textarea>
 
-                        <label id="multi-label-2" class="text-xs font-bold text-slate-500 uppercase tracking-wider">Input B</label>
+                        <label id="multi-label-2"
+                            class="text-xs font-bold text-slate-500 uppercase tracking-wider">Input B</label>
                         <div id="multi-input-2-form" class="structured-grid"></div>
                         <textarea id="multi-input-2" class="raw-data" rows="10"></textarea>
                     </div>
@@ -438,19 +474,23 @@
                     <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Prompt Mahasiswa</span>
                 </div>
 
-                <div id="prompt-output" class="prompt-box">Pilih modul di navigasi kiri untuk menghasilkan prompt...</div>
+                <div id="prompt-output" class="prompt-box">Pilih modul di navigasi kiri untuk menghasilkan prompt...
+                </div>
 
                 <div class="bg-white border border-slate-200 rounded-lg p-4 flex flex-col gap-3">
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <div>
                             <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Simpan Prompt</p>
-                            <p id="prompt-save-info" class="text-xs text-slate-500 mt-1">Prompt otomatis tersimpan di sesi browser.</p>
+                            <p id="prompt-save-info" class="text-xs text-slate-500 mt-1">Prompt otomatis tersimpan di
+                                sesi browser.</p>
                         </div>
                         <div class="flex flex-wrap gap-2">
-                            <button onclick="saveState(true)" class="btn-secondary flex items-center justify-center gap-2" type="button">
+                            <button onclick="saveState(true)"
+                                class="btn-secondary flex items-center justify-center gap-2" type="button">
                                 <i class="ti ti-device-floppy"></i> Simpan Sekarang
                             </button>
-                            <button onclick="restoreSavedPrompt()" class="btn-secondary flex items-center justify-center gap-2" type="button">
+                            <button onclick="restoreSavedPrompt()"
+                                class="btn-secondary flex items-center justify-center gap-2" type="button">
                                 <i class="ti ti-history"></i> Pulihkan Prompt
                             </button>
                         </div>
@@ -460,14 +500,17 @@
                 <div class="bg-blue-50 border border-blue-100 rounded-lg p-4 flex gap-3">
                     <i class="ti ti-info-circle text-blue-500 text-lg"></i>
                     <p class="text-xs text-blue-700 leading-relaxed">
-                        Alur terbaik: buat DNA Riset dulu, tempel hasil finalnya di Fase 0, lalu semua tab akan memakai DNA yang sama. Jika butuh data terbaru, aktifkan browsing/Deep Research dan minta sumber dicantumkan.
+                        Alur terbaik: buat DNA Riset dulu, tempel hasil finalnya di Fase 0, lalu semua tab akan memakai
+                        DNA yang sama. Jika butuh data terbaru, aktifkan browsing/Deep Research dan minta sumber
+                        dicantumkan.
                     </p>
                 </div>
             </section>
         </div>
     </main>
 
-    <div id="toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-6 py-3 rounded-full text-sm font-bold shadow-xl opacity-0 transition-all pointer-events-none z-[100]">
+    <div id="toast"
+        class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-6 py-3 rounded-full text-sm font-bold shadow-xl opacity-0 transition-all pointer-events-none z-[100]">
         Prompt berhasil disalin
     </div>
 
@@ -1139,7 +1182,7 @@ ${draft || '[TEMPEL DRAFT HASIL REVISI]'}
                 const wide = control === 'textarea' ? ' wide' : '';
                 const label = item.label.replace(/&/g, '&amp;').replace(/</g, '&lt;');
                 const guide = item.hint ? `<p class="text-[10px] text-slate-400 mb-1 leading-tight italic font-medium px-1">${item.hint.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</p>` : '';
-                
+
                 const field = control === 'textarea'
                     ? `<textarea class="structured-input" data-structured-for="${rawId}" data-field-label="${label}" rows="3">${value}</textarea>`
                     : `<input class="structured-input" data-structured-for="${rawId}" data-field-label="${label}" value="${value}">`;
@@ -1523,4 +1566,5 @@ ${context || '[BELUM DIISI]'}`;
         sw(restoredTab);
     </script>
 </body>
+
 </html>
