@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Research Prompt Mahasiswa v16</title>
+    <title>Research Prompt Mahasiswa</title>
+    <meta name="description" content="Platform penyusunan skripsi dan tesis berbasis AI untuk mahasiswa. Bantu menyusun Bab 1-5, abstrak, dan persiapan sidang secara strategis.">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
@@ -30,11 +31,37 @@
             color: white;
             z-index: 50;
             overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease;
         }
 
         .main-content {
             margin-left: var(--sidebar-width);
             min-height: 100vh;
+            transition: margin-left 0.3s ease;
+        }
+
+        @media (max-width: 1023px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.5);
+                z-index: 45;
+            }
+            .sidebar-overlay.show {
+                display: block;
+            }
         }
 
         .nav-item {
@@ -135,10 +162,16 @@
             background: #f8fafc;
             border: 1px solid #e2e8f0;
             border-radius: 0.5rem;
-            padding: 0.75rem;
+            padding: 0.75rem 0.875rem;
             font-size: 0.875rem;
             outline: none;
             transition: all 0.2s;
+        }
+
+        ::placeholder {
+            font-size: 0.875rem;
+            padding-left: 10px;
+            opacity: 0.5;
         }
 
         input:focus,
@@ -151,6 +184,9 @@
         textarea[readonly] {
             background: #f1f5f9;
             color: #475569;
+            font-size: 0.75rem;
+            line-height: 1.6;
+            padding: 1rem;
         }
 
         .status-pill {
@@ -243,31 +279,23 @@
             .structured-grid {
                 grid-template-columns: 1fr;
             }
-
-            .sidebar {
-                position: relative;
-                width: 100%;
-                height: auto;
-            }
-
-            .main-content {
-                margin-left: 0;
-            }
-
-            .prompt-box {
-                height: 520px;
-            }
         }
     </style>
 </head>
 <body>
-    <aside class="sidebar">
-        <div class="p-6 border-b border-slate-800 flex items-center gap-3">
-            <i class="ti ti-school text-2xl text-blue-400"></i>
-            <div>
-                <h1 class="font-bold text-lg tracking-tight">Prompt Mahasiswa v16</h1>
-                <p class="text-[11px] text-slate-400 font-semibold mt-1">ChatGPT / Claude / Gemini</p>
+    <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <aside id="sidebar" class="sidebar">
+        <div class="p-6 border-b border-slate-800 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <i class="ti ti-school text-2xl text-blue-400"></i>
+                <div>
+                    <h1 class="font-bold text-lg tracking-tight">Skripsi Engine</h1>
+                    <p class="text-[11px] text-slate-400 font-semibold mt-1">ChatGPT / Claude / Gemini</p>
+                </div>
             </div>
+            <button onclick="toggleSidebar()" class="lg:hidden text-slate-400 hover:text-white">
+                <i class="ti ti-x text-xl"></i>
+            </button>
         </div>
 
         <nav class="pb-8">
@@ -289,18 +317,31 @@
             <div class="nav-group-title">Revisi</div>
             <div onclick="sw('revisi')" id="t-revisi" class="nav-item text-emerald-300"><i class="ti ti-shield-check"></i> Validasi Revisi</div>
         </nav>
+
+        <div class="mt-auto p-6 border-t border-slate-800">
+            <a href="dosen_pembimbing_audit.html" class="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white transition-colors">
+                <i class="ti ti-external-link"></i> Buka Mode Dosen
+            </a>
+        </div>
     </aside>
 
     <main class="main-content">
-        <header class="bg-white border-b border-slate-200 px-8 py-4 flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center sticky top-0 z-40">
-            <div>
-                <h2 id="header-title" class="font-bold text-slate-800 text-xl">Fase 0: DNA Riset</h2>
-                <p id="header-subtitle" class="text-xs text-slate-500 font-medium">Membentuk fondasi skripsi/tesis yang jelas</p>
+        <header class="bg-white border-b border-slate-200 px-6 py-4 flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center sticky top-0 z-40">
+            <div class="flex items-center gap-4">
+                <button onclick="toggleSidebar()" class="lg:hidden p-2 -ml-2 text-slate-600 hover:bg-slate-100 rounded-lg">
+                    <i class="ti ti-menu-2 text-xl"></i>
+                </button>
+                <div>
+                    <h2 id="header-title" class="font-bold text-slate-800 text-xl leading-none">Fase 0: DNA Riset</h2>
+                    <p id="header-subtitle" class="text-xs text-slate-500 font-medium mt-1">Membangun fondasi skripsi/tesis yang jelas</p>
+                </div>
             </div>
-            <button onclick="copyPrompt()" class="btn-primary flex items-center justify-center gap-2">
-                <i class="ti ti-copy"></i> Salin Prompt
-            </button>
-            <span id="session-state" class="status-pill status-info"><i class="ti ti-device-floppy"></i> Sesi tersimpan</span>
+            <div class="flex items-center gap-3">
+                <span id="session-state" class="status-pill status-info"><i class="ti ti-device-floppy"></i> Sesi tersimpan</span>
+                <button onclick="copyPrompt()" class="btn-primary flex items-center justify-center gap-2">
+                    <i class="ti ti-copy"></i> Salin Prompt
+                </button>
+            </div>
         </header>
 
         <div class="p-6 lg:p-8 grid grid-cols-1 xl:grid-cols-2 gap-8">
@@ -356,19 +397,25 @@
 
                 <div id="p-editor" class="panel space-y-6">
                     <div class="card space-y-4">
-                        <div>
+                        <div class="flex flex-col">
                             <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">DNA Riset Aktif</label>
-                            <p class="text-xs text-slate-500 mt-1">Diambil otomatis dari Fase 0, jadi Bab 1-5 memakai konteks yang sama.</p>
+                            <p class="text-[10px] text-slate-400 mb-2 leading-tight italic font-medium px-1">Diambil otomatis dari Fase 0, jadi Bab 1-5 memakai konteks yang sama.</p>
                         </div>
-                        <textarea id="editor-dna" rows="7" readonly placeholder="Isi Fase 0 dulu. DNA aktif akan tampil otomatis di sini..."></textarea>
+                        <textarea id="editor-dna" rows="7" readonly></textarea>
 
-                        <label id="editor-note-label" class="text-xs font-bold text-slate-500 uppercase tracking-wider">Catatan Pembimbing / Target Perbaikan</label>
+                        <div class="flex flex-col">
+                            <label id="editor-note-label" class="text-xs font-bold text-slate-500 uppercase tracking-wider">Catatan Pembimbing / Target Perbaikan</label>
+                            <p class="text-[10px] text-slate-400 mb-2 leading-tight italic font-medium">Opsional: tempel catatan pembimbing, arahan penguji, atau target yang ingin diperbaiki...</p>
+                        </div>
                         <div id="editor-note-form" class="structured-grid"></div>
-                        <textarea id="editor-note" class="raw-data" rows="4" placeholder="Opsional: tempel catatan pembimbing, arahan penguji, atau target yang ingin diperbaiki..."></textarea>
+                        <textarea id="editor-note" class="raw-data" rows="4"></textarea>
 
-                        <label id="editor-target-label" class="text-xs font-bold text-slate-500 uppercase tracking-wider">Bahan / Draft Bab</label>
+                        <div class="flex flex-col">
+                            <label id="editor-target-label" class="text-xs font-bold text-slate-500 uppercase tracking-wider">Bahan / Draft Bab</label>
+                            <p class="text-[10px] text-slate-400 mb-2 leading-tight italic font-medium">Tempel draft, poin-poin, data, atau bahan bab yang ingin disusun/diperbaiki...</p>
+                        </div>
                         <div id="editor-text-form" class="structured-grid"></div>
-                        <textarea id="editor-text" class="raw-data" rows="14" placeholder="Tempel draft, poin-poin, data, atau bahan bab yang ingin disusun/diperbaiki..."></textarea>
+                        <textarea id="editor-text" class="raw-data" rows="14"></textarea>
                     </div>
                 </div>
 
@@ -426,8 +473,8 @@
 
     <script>
         let currentTab = 'dna';
-        const STORAGE_KEY = 'promptMahasiswaV16State';
-        const SESSION_KEY = 'promptMahasiswaV16Session';
+        const STORAGE_KEY = 'promptMahasiswaState';
+        const SESSION_KEY = 'promptMahasiswaSession';
         const dnaFieldIds = ['dna-info', 'dna-context', 'dna-final'];
         const tabFieldIds = ['editor-note', 'editor-text', 'multi-input-1', 'multi-input-2'];
         const chapterTabs = ['b1', 'b2', 'b3', 'b4', 'b5'];
@@ -1089,15 +1136,19 @@ ${draft || '[TEMPEL DRAFT HASIL REVISI]'}
             container.innerHTML = items.map(item => {
                 const control = isLongStructuredField(item.label) ? 'textarea' : 'input';
                 const value = (parsed[item.index] || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
-                const hint = item.hint ? ` placeholder="${item.hint.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;')}"` : '';
                 const wide = control === 'textarea' ? ' wide' : '';
                 const label = item.label.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+                const guide = item.hint ? `<p class="text-[10px] text-slate-400 mb-1 leading-tight italic font-medium px-1">${item.hint.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</p>` : '';
+                
                 const field = control === 'textarea'
-                    ? `<textarea class="structured-input" data-structured-for="${rawId}" data-field-label="${label}"${hint} rows="3">${value}</textarea>`
-                    : `<input class="structured-input" data-structured-for="${rawId}" data-field-label="${label}"${hint} value="${value}">`;
+                    ? `<textarea class="structured-input" data-structured-for="${rawId}" data-field-label="${label}" rows="3">${value}</textarea>`
+                    : `<input class="structured-input" data-structured-for="${rawId}" data-field-label="${label}" value="${value}">`;
 
                 return `<div class="structured-field${wide}">
-                    <label>${label}</label>
+                    <div class="flex flex-col">
+                        <label>${label}</label>
+                        ${guide}
+                    </div>
                     ${field}
                 </div>`;
             }).join('');
@@ -1448,6 +1499,11 @@ ${context || '[BELUM DIISI]'}`;
             document.execCommand('copy');
             document.body.removeChild(temp);
             done();
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebar-overlay').classList.toggle('show');
         }
 
         document.addEventListener('input', event => {

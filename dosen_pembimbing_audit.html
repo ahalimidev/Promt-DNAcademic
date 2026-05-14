@@ -1,9 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Auditor Riset AI Pro v6.0</title>
+    <title>Sistem Auditor Riset AI Pro</title>
+    <meta name="description" content="Sistem audit riset profesional untuk dosen pembimbing. Lakukan review naskah bab per bab, cek konsistensi global, dan analisis novelty menggunakan AI.">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
@@ -30,11 +31,37 @@
             color: white;
             z-index: 50;
             overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease;
         }
 
         .main-content {
             margin-left: var(--sidebar-width);
             min-height: 100vh;
+            transition: margin-left 0.3s ease;
+        }
+
+        @media (max-width: 1023px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.5);
+                z-index: 45;
+            }
+            .sidebar-overlay.show {
+                display: block;
+            }
         }
 
         .nav-item {
@@ -114,22 +141,38 @@
             background: #1d4ed8;
         }
 
+        input,
         textarea,
         select {
             width: 100%;
             background: #f8fafc;
             border: 1px solid #e2e8f0;
             border-radius: 0.5rem;
-            padding: 0.75rem;
+            padding: 0.75rem 0.875rem;
             font-size: 0.875rem;
             outline: none;
             transition: all 0.2s;
         }
 
+        ::placeholder {
+            font-size: 0.875rem;
+            padding-left: 10px;
+            opacity: 0.5;
+        }
+
+        input:focus,
         textarea:focus,
         select:focus {
             border-color: var(--brand-blue);
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        textarea[readonly] {
+            background: #f1f5f9;
+            color: #475569;
+            font-size: 0.75rem;
+            line-height: 1.6;
+            padding: 1rem;
         }
 
         .model-chip {
@@ -145,34 +188,154 @@
             border: 1px solid #dbeafe;
         }
 
-        @media (max-width: 1024px) {
-            .sidebar {
-                position: relative;
-                width: 100%;
-                height: auto;
-            }
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background: var(--brand-slate);
+            color: white;
+            z-index: 50;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
 
-            .main-content {
-                margin-left: 0;
-            }
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            border-radius: 999px;
+            padding: 0.375rem 0.625rem;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
 
-            .prompt-box {
-                height: 520px;
+        .status-ok { background: #dcfce7; color: #166534; }
+        .status-warn { background: #fef3c7; color: #92400e; }
+        .status-info { background: #dbeafe; color: #1d4ed8; }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #0f172a;
+            padding: 0.5rem 0.875rem;
+            border-radius: 0.5rem;
+            font-weight: 700;
+            font-size: 0.75rem;
+            transition: all 0.2s;
+        }
+        .btn-secondary:hover { background: #cbd5e1; }
+
+        .structured-grid {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .structured-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
+        }
+
+        .structured-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.375rem;
+        }
+
+        .structured-item.col-span-full {
+            grid-column: 1 / -1;
+        }
+
+        .structured-label {
+            font-size: 0.65rem;
+            font-weight: 800;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .structured-input {
+            width: 100%;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 0.625rem 10px;
+            font-size: 0.875rem;
+            color: #1e293b;
+            outline: none;
+            transition: all 0.2s;
+            line-height: 1.5;
+        }
+
+        .structured-input:focus {
+            border-color: var(--brand-blue);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .raw-data {
+            display: none;
+        }
+
+        .edit-mode-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .guide-box {
+            background: #f8fafc;
+            border-left: 4px solid var(--brand-blue);
+            padding: 1rem 1.25rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .step-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background: var(--brand-blue);
+            color: white;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            font-weight: 800;
+        }
+
+        .workflow-card {
+            background: #eff6ff;
+            border: 1px solid #dbeafe;
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            margin-bottom: 2rem;
         }
     </style>
 </head>
 <body>
-    <aside class="sidebar">
-        <div class="p-6 border-b border-slate-800 flex items-center gap-3">
-            <i class="ti ti-school text-2xl text-blue-400"></i>
-            <div>
-                <h1 class="font-bold text-lg tracking-tight">Auditor Riset v6.0</h1>
-                <p class="text-[11px] text-slate-400 font-semibold mt-1">ChatGPT / Claude / Gemini</p>
+    <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <aside id="sidebar" class="sidebar">
+        <div class="p-6 border-b border-slate-800 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <i class="ti ti-school text-2xl text-blue-400"></i>
+                <div>
+                    <h1 class="font-bold text-lg tracking-tight">Auditor Riset</h1>
+                    <p class="text-[11px] text-slate-400 font-semibold mt-1">ChatGPT / Claude / Gemini</p>
+                </div>
             </div>
+            <button onclick="toggleSidebar()" class="lg:hidden text-slate-400 hover:text-white">
+                <i class="ti ti-x text-xl"></i>
+            </button>
         </div>
 
-        <nav class="pb-8">
+        <nav class="flex-grow overflow-y-auto pb-8">
             <div class="nav-group-title">Tahap Awal</div>
             <div onclick="sw('dna')" id="t-dna" class="nav-item active"><i class="ti ti-dna"></i> Fase 0: DNA Riset</div>
 
@@ -192,40 +355,131 @@
             <div onclick="sw('weakness')" id="t-weakness" class="nav-item text-red-300"><i class="ti ti-alert-triangle"></i> Scanner Kelemahan</div>
             <div onclick="sw('validate')" id="t-validate" class="nav-item text-emerald-300"><i class="ti ti-shield-check"></i> Verifikasi Perbaikan</div>
         </nav>
+
+        <div class="mt-auto p-6 space-y-4 border-t border-slate-800">
+            <div class="bg-slate-800/50 rounded-lg p-3">
+                <h5 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Tips Auditor</h5>
+                <ul class="text-[10px] text-slate-400 space-y-2 leading-tight">
+                    <li><i class="ti ti-check text-blue-400"></i> Selesaikan DNA Fase 0 dulu</li>
+                    <li><i class="ti ti-check text-blue-400"></i> Audit per bab untuk akurasi</li>
+                    <li><i class="ti ti-check text-blue-400"></i> Gunakan Claude/GPT-4o</li>
+                </ul>
+            </div>
+            <a href="index.html" class="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white transition-colors">
+                <i class="ti ti-external-link"></i> Buka Mode Mahasiswa
+            </a>
+        </div>
     </aside>
 
     <main class="main-content">
-        <header class="bg-white border-b border-slate-200 px-8 py-4 flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center sticky top-0 z-40">
-            <div>
-                <h2 id="header-title" class="font-bold text-slate-800 text-xl">Fase 0: DNA Riset</h2>
-                <p id="header-subtitle" class="text-xs text-slate-500 font-medium">Membangun konstitusi acuan audit</p>
+        <header class="bg-white border-b border-slate-200 px-6 py-4 flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center sticky top-0 z-40">
+            <div class="flex items-center gap-4">
+                <button onclick="toggleSidebar()" class="lg:hidden p-2 -ml-2 text-slate-600 hover:bg-slate-100 rounded-lg">
+                    <i class="ti ti-menu-2 text-xl"></i>
+                </button>
+                <div>
+                    <h2 id="header-title" class="font-bold text-slate-800 text-xl leading-none">Fase 0: DNA Riset</h2>
+                    <p id="header-subtitle" class="text-xs text-slate-500 font-medium mt-1">Membangun konstitusi acuan audit</p>
+                </div>
             </div>
-            <button onclick="copyPrompt()" class="btn-primary flex items-center justify-center gap-2">
-                <i class="ti ti-copy"></i> Salin Prompt
-            </button>
+            <div class="flex items-center gap-3">
+                <span id="session-state" class="status-pill status-info"><i class="ti ti-device-floppy"></i> Sesi tersimpan</span>
+                <button onclick="copyPrompt()" class="btn-primary flex items-center justify-center gap-2">
+                    <i class="ti ti-copy"></i> Salin Prompt
+                </button>
+            </div>
         </header>
 
         <div class="p-6 lg:p-8 grid grid-cols-1 xl:grid-cols-2 gap-8">
             <section class="space-y-6">
                 <div class="card space-y-3">
                     <div class="flex flex-wrap gap-2">
-                        <span class="model-chip"><i class="ti ti-brand-openai"></i> GPT-5.5</span>
-                        <span class="model-chip"><i class="ti ti-sparkles"></i> Claude Opus/Sonnet</span>
-                        <span class="model-chip"><i class="ti ti-bolt"></i> Gemini 3.1</span>
+                        <span class="model-chip"><i class="ti ti-brand-openai"></i> ChatGPT</span>
+                        <span class="model-chip"><i class="ti ti-sparkles"></i> Claude</span>
+                        <span class="model-chip"><i class="ti ti-bolt"></i> Gemini</span>
                     </div>
-                    <p class="text-xs text-slate-600 leading-relaxed">
-                        Prompt v6.0 memakai delimiter XML, aturan anti-halusinasi sumber, audit berbasis bukti naskah, dan instruksi riset terkini.
-                        Untuk data terbaru, aktifkan browsing, Deep Research, atau Google Search grounding pada model yang dipakai.
-                    </p>
+                    <div id="input-guide-container" class="guide-box">
+                        <div class="flex gap-3">
+                            <i class="ti ti-info-circle text-blue-500 text-lg"></i>
+                            <div>
+                                <h4 class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Panduan Modul</h4>
+                                <div id="input-guide" class="text-xs text-slate-600 leading-relaxed">
+                                    Pilih modul untuk melihat panduan audit...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-end">
+                        <button onclick="clearActiveForm()" class="btn-secondary flex items-center justify-center gap-2 shrink-0" type="button">
+                            <i class="ti ti-eraser"></i> Kosongkan Form Tab Ini
+                        </button>
+                    </div>
                 </div>
 
                 <div id="p-dna" class="panel active space-y-6">
-                    <div class="card space-y-4">
-                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Identitas Peneliti</label>
-                        <textarea id="dna-info" rows="4" placeholder="Nama, NIM, program studi, jenjang, kampus, judul sementara, bidang ilmu, target luaran..."></textarea>
+                    <div class="workflow-card">
+                        <h4 class="text-xs font-bold text-blue-900 uppercase tracking-widest mb-4 flex items-center gap-2">
+                            <i class="ti ti-map-2"></i> Alur Kerja Auditor Riset
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="space-y-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="step-badge">1</span>
+                                    <span class="text-[11px] font-bold text-blue-800">DATA MENTAH</span>
+                                </div>
+                                <p class="text-[10px] text-blue-700 leading-snug">Isi identitas dan narasi mentah ide riset di kolom bawah.</p>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="step-badge">2</span>
+                                    <span class="text-[11px] font-bold text-blue-800">EKSTRAKSI DNA</span>
+                                </div>
+                                <p class="text-[10px] text-blue-700 leading-snug">Salin prompt, tempel ke AI, lalu ambil hasil <strong>DNA Riset</strong>.</p>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="step-badge">3</span>
+                                    <span class="text-[11px] font-bold text-blue-800">KUNCI KONSTITUSI</span>
+                                </div>
+                                <p class="text-[10px] text-blue-700 leading-snug">Tempel hasil AI ke kolom <strong>DNA Final</strong> untuk mengunci acuan audit.</p>
+                            </div>
+                        </div>
+                    </div>
 
-                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Konteks Riset</label>
-                        <textarea id="dna-context" rows="13" placeholder="Tuliskan masalah, fenomena, data awal, tujuan, variabel/konstruk, metode awal, batasan, dan keraguan yang masih ada..."></textarea>
+                    <div class="card space-y-4">
+                        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                                <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Status DNA Aktif</label>
+                                <p class="text-xs text-slate-500 mt-1">Tersimpan otomatis dan dipakai lintas modul.</p>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span id="dna-save-state" class="status-pill status-warn"><i class="ti ti-alert-circle"></i> Belum lengkap</span>
+                                <button onclick="resetStoredData()" class="btn-secondary flex items-center gap-2" type="button">
+                                    <i class="ti ti-refresh"></i> Reset Simpanan
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col">
+                            <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Identitas Peneliti</label>
+                            <p class="text-[10px] text-slate-400 mb-2 leading-tight italic font-medium">Nama, NIM, program studi, jenjang, kampus, judul sementara, bidang ilmu, target luaran...</p>
+                        </div>
+                        <div id="dna-info-form" class="structured-grid"></div>
+                        <textarea id="dna-info" class="raw-data" rows="4"></textarea>
+
+                        <div class="flex flex-col">
+                            <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Konteks Riset</label>
+                            <p class="text-[10px] text-slate-400 mb-2 leading-tight italic font-medium">Tuliskan masalah, fenomena, data awal, tujuan, variabel/konstruk, metode awal, batasan, dan keraguan yang masih ada...</p>
+                        </div>
+                        <div id="dna-context-form" class="structured-grid"></div>
+                        <textarea id="dna-context" class="raw-data" rows="13"></textarea>
+
+                        <div class="flex flex-col">
+                            <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">DNA Riset Final (Acuan Audit)</label>
+                            <p class="text-[10px] text-slate-400 mb-2 leading-tight italic font-medium font-bold text-blue-500">Tempelkan hasil DNA Riset dari AI di sini agar semua bab teraudit secara konsisten.</p>
+                        </div>
+                        <div id="dna-final-form" class="structured-grid"></div>
+                        <textarea id="dna-final" class="raw-data" rows="10"></textarea>
                     </div>
                 </div>
 
@@ -245,21 +499,30 @@
                             </div>
                         </div>
 
-                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">DNA Riset</label>
-                        <textarea id="editor-dna" rows="6" placeholder="Tempelkan dokumen DNA Riset hasil Fase 0 di sini..."></textarea>
+                        <div class="flex flex-col">
+                            <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">DNA Riset Aktif</label>
+                            <p class="text-[10px] text-slate-400 mb-2 leading-tight italic font-medium">Diambil otomatis dari Fase 0 untuk menjaga konsistensi audit.</p>
+                        </div>
+                        <textarea id="editor-dna" rows="7" readonly></textarea>
 
-                        <label id="editor-target-label" class="text-xs font-bold text-slate-500 uppercase tracking-wider">Teks Naskah Bab</label>
-                        <textarea id="editor-text" rows="16" placeholder="Tempelkan teks bab yang akan diaudit..."></textarea>
+                        <div class="flex flex-col">
+                            <label id="editor-target-label" class="text-xs font-bold text-slate-500 uppercase tracking-wider">Teks Naskah Bab</label>
+                            <p class="text-[10px] text-slate-400 mb-2 leading-tight italic font-medium">Tempelkan teks bab yang akan diaudit...</p>
+                        </div>
+                        <div id="editor-text-form" class="structured-grid"></div>
+                        <textarea id="editor-text" class="raw-data" rows="16"></textarea>
                     </div>
                 </div>
 
                 <div id="p-multi" class="panel space-y-6">
                     <div class="card space-y-4">
                         <label id="multi-label-1" class="text-xs font-bold text-slate-500 uppercase tracking-wider">Input A</label>
-                        <textarea id="multi-input-1" rows="10"></textarea>
+                        <div id="multi-input-1-form" class="structured-grid"></div>
+                        <textarea id="multi-input-1" class="raw-data" rows="10"></textarea>
 
                         <label id="multi-label-2" class="text-xs font-bold text-slate-500 uppercase tracking-wider">Input B</label>
-                        <textarea id="multi-input-2" rows="10"></textarea>
+                        <div id="multi-input-2-form" class="structured-grid"></div>
+                        <textarea id="multi-input-2" class="raw-data" rows="10"></textarea>
                     </div>
                 </div>
             </section>
@@ -271,6 +534,23 @@
                 </div>
 
                 <div id="prompt-output" class="prompt-box">Pilih modul di navigasi kiri untuk menghasilkan prompt audit...</div>
+
+                <div class="bg-white border border-slate-200 rounded-lg p-4 flex flex-col gap-3">
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Simpan Prompt</p>
+                            <p id="prompt-save-info" class="text-xs text-slate-500 mt-1">Prompt otomatis tersimpan di sesi browser.</p>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="saveState(true)" class="btn-secondary flex items-center justify-center gap-2" type="button">
+                                <i class="ti ti-device-floppy"></i> Simpan Sekarang
+                            </button>
+                            <button onclick="restoreSavedPrompt()" class="btn-secondary flex items-center justify-center gap-2" type="button">
+                                <i class="ti ti-history"></i> Pulihkan Prompt
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="bg-blue-50 border border-blue-100 rounded-lg p-4 flex gap-3">
                     <i class="ti ti-info-circle text-blue-500 text-lg"></i>
@@ -288,10 +568,118 @@
 
     <script>
         let currentTab = 'dna';
+        const STORAGE_KEY = 'promptDosenState';
+        const SESSION_KEY = 'promptDosenSession';
+        const dnaFieldIds = ['dna-info', 'dna-context', 'dna-final'];
+        const otherFieldIds = ['editor-text', 'multi-input-1', 'multi-input-2'];
+        const chapterTabs = ['b1', 'b2', 'b3', 'b4', 'b5'];
+        let lastSavedAt = null;
+        let saveTimer = null;
+        let savedPrompts = {};
+
+        const dnaPlaceholders = {
+            info: `Nama/NIM:
+Program studi/jenjang:
+Kampus:
+Judul sementara:
+Bidang/fokus riset:
+Target luaran:`,
+            context: `Masalah praktis/teoretis:
+Fenomena yang diteliti:
+Data awal/fakta pendukung:
+Tujuan penelitian:
+Variabel/konstruk utama:
+Metode awal:
+Batasan penelitian:
+Keraguan/kebingungan:`,
+            final: `Judul kerja:
+Problem statement:
+Research gap:
+Rumusan masalah:
+Tujuan penelitian:
+Metode & desain:
+Novelty:
+Red flags:`
+        };
+
+        const auditInputConfig = {
+            b1: {
+                text: `Draft Bab 1:
+Latar belakang:
+Konteks fenomena:
+Masalah penelitian:
+Research gap:
+Rumusan masalah:
+Tujuan & manfaat:
+Batasan:`
+            },
+            b2: {
+                text: `Draft Bab 2:
+Daftar teori:
+Variabel utama:
+Sintesis literatur:
+Gap positioning:
+Kerangka pikir:`
+            },
+            b3: {
+                text: `Draft Bab 3:
+Desain riset:
+Populasi & sampel:
+Instrumen:
+Teknik pengumpulan data:
+Prosedur:
+Teknik analisis:
+Validitas & etika:`
+            },
+            b4: {
+                text: `Draft Bab 4:
+Hasil temuan:
+Angka/data kunci:
+Interpretasi:
+Kaitan literatur:
+Pembahasan RQ:`
+            },
+            b5: {
+                text: `Draft Bab 5:
+Kesimpulan utama:
+Kontribusi riset:
+Keterbatasan:
+Saran praktis:
+Saran riset lanjut:`
+            },
+            weakness: {
+                text: `Draft Naskah:
+Bagian yang disorot:
+Metode yang dipakai:
+Klaim novelty:
+Data pendukung:`
+            }
+        };
+
+        const finalInputConfig = {
+            global: { a: `DNA Riset:`, b: `Verdict/Temuan Bab 1-5:` },
+            novelty: { a: `DNA Riset:`, b: `Laporan Audit Sebelumnya:` },
+            final: { a: `DNA Riset:`, b: `Ringkasan Semua Review:` },
+            validate: { a: `Daftar Temuan Lama:`, b: `Naskah Revisi Baru:` }
+        };
+
+        const inputGuides = {
+            dna: `<strong>Fase 0: Membangun Konstitusi Riset</strong>. Gunakan modul ini untuk mengubah ide mentah menjadi struktur riset yang formal. Hasil "DNA Riset" dari modul ini akan menjadi standar tunggal untuk mengaudit Bab 1 sampai Bab 5 agar tidak terjadi kontradiksi antar bagian.`,
+            b1: `<strong>Audit Bab 1: Logika & Urgensi</strong>. AI akan fokus mengecek apakah masalah yang diangkat benar-benar didukung data fenomena, bukan sekadar opini. Fokus audit: Ketajaman Research Gap dan sinkronisasi Rumusan Masalah.`,
+            b2: `<strong>Audit Bab 2: Kedalaman Teoretis</strong>. Hindari naskah yang hanya daftar ringkasan buku. AI akan mengecek sintesis antar sumber dan apakah teori yang dipilih benar-benar mampu membedah variabel yang ada di DNA Riset.`,
+            b3: `<strong>Audit Bab 3: Validitas Metode</strong>. AI akan melakukan stres-test pada desain riset. Apakah instrumennya valid? Apakah teknik samplingnya tepat? Apakah alur analisisnya logis untuk menjawab Research Questions?`,
+            b4: `<strong>Audit Bab 4: Jawaban Ilmiah</strong>. Modul ini mendeteksi apakah pembahasan hasil riset hanya "membaca angka" atau sudah melakukan interpretasi mendalam dengan mengaitkan kembali ke teori di Bab 2.`,
+            b5: `<strong>Audit Bab 5: Kontribusi & Penutup</strong>. Mengecek apakah kesimpulan menjawab tujuan riset secara tuntas dan apakah saran yang diberikan benar-benar bisa dilaksanakan (operasional), bukan saran normatif yang umum.`,
+            global: `<strong>Audit Konsistensi Lintas Bab</strong>. AI akan menyisir seluruh naskah untuk mencari ketidaksesuaian istilah, variabel yang tiba-tiba hilang/muncul, atau kontradiksi antara latar belakang (Bab 1) dengan temuan (Bab 4).`,
+            novelty: `<strong>Uji Kebaruan (Novelty)</strong>. AI akan bertindak sebagai penguji yang skeptis untuk mencari apa yang benar-benar baru dari riset ini dibanding penelitian terdahulu. Berguna untuk memetakan posisi publikasi jurnal.`,
+            final: `<strong>Laporan Evaluasi Akhir</strong>. Ringkasan seluruh hasil audit dalam satu laporan eksekutif. Lengkap dengan skor kualitas akademik (0-100) dan daftar pertanyaan sidang yang paling berisiko tinggi.`,
+            weakness: `<strong>Scanner Kelemahan Fatal</strong>. Simulasi serangan argumen dari penguji sidang. Modul ini akan mencari titik terlemah dalam metodologi atau logika argumen untuk disiapkan jawabannya sejak dini.`,
+            validate: `<strong>Verifikasi Perbaikan</strong>. Gunakan modul ini saat mahasiswa sudah mengumpulkan revisi. AI akan membandingkan catatan audit lama dengan naskah baru untuk memastikan semua perbaikan sudah dilakukan.`
+        };
 
         const modelProtocol = (taskName) => `<PROTOKOL_MODEL>
 Tugas: ${taskName}
-Kompatibilitas: ChatGPT/OpenAI GPT-5.5+, Claude Opus/Sonnet terbaru, Gemini 3.1/2.5+.
+Kompatibilitas: ChatGPT, Claude, dan Gemini versi terbaru.
 Bahasa output: Bahasa Indonesia akademik yang ringkas, strategis, dan langsung dapat dieksekusi.
 
 Aturan kerja:
@@ -346,7 +734,7 @@ ${cekWajib}
 1. Mulai dari verdict atau hasil utama, bukan pendahuluan.
 2. Gunakan tabel jika ada lebih dari 3 temuan.
 3. Beri kritik yang spesifik: lokasi, bukti, masalah, dampak, aksi.
-4. Jangan memberi teori umum, motivasi, atau penjelasan panjang yang tidak diminta.
+4. Jangan memberi teori umum, tanpa motivasi, atau penjelasan panjang yang tidak diminta.
 5. Jika membuat revisi teks, tulis versi siap tempel dan jangan mengarang fakta baru.
 </PRINSIP_OUTPUT>
 
@@ -371,14 +759,18 @@ ${checks.filter(Boolean).join('\n\n')}
 ${standardFrame(tupoksi, cekWajib, hasilKhusus)}`;
 
         const templates = {
-            dna: (info, context) => buildPrompt({
+            dna: (info, context, final) => buildPrompt({
                 input: `<KONTEKS_MAHASISWA>
 ${info || '[ISI IDENTITAS: nama, NIM, prodi, jenjang, kampus, judul sementara, bidang ilmu]'}
 </KONTEKS_MAHASISWA>
 
 <NARASI_RISET_MENTAH>
 ${context || '[ISI LATAR BELAKANG, MASALAH, TUJUAN, VARIABEL/KONSEP, METODE AWAL, DATA YANG TERSEDIA]'}
-</NARASI_RISET_MENTAH>`,
+</NARASI_RISET_MENTAH>
+
+<DNA_RISET_SEBELUMNYA>
+${final || '[KOSONGKAN JIKA BELUM ADA DNA FINAL]'}
+</DNA_RISET_SEBELUMNYA>`,
                 task: 'Membangun DNA riset strategis',
                 checks: [evidenceGate, methodFitChecker, antiOverclaim],
                 tupoksi: 'Bertindak sebagai arsitek DNA riset. Ubah ide mentah menjadi struktur riset yang jelas, terukur, dan siap menjadi acuan audit semua bab.',
@@ -436,11 +828,11 @@ ${text || '[TEMPEL BAB 3: METODOLOGI PENELITIAN]'}
                 task: 'Audit Bab 3 - Metodologi',
                 checks: [severityRubric, evidenceGate, methodFitChecker, qualityScale],
                 tupoksi: 'Metodolog riset. Fokus hanya pada kesesuaian desain, data, sampel/subjek, instrumen, prosedur, analisis, validitas, etika, dan reprodusibilitas.',
-                cekWajib: `1. Cek kecocokan RQ, data, metode, instrumen, analisis, dan metrik.
+                cekWajib: `1. Cek kecocokan RQ, data, metode, instrumen, analisis, and metrik.
 2. Uji apakah penelitian bisa direplikasi dari Bab 3.
 3. Cek validitas/reliabilitas atau trustworthiness.
-4. Tandai bias, confounding, leakage, missing data, dan kelemahan etika.`,
-                hasilKhusus: 'Verdict kelayakan metodologi dan skor metodologi 0-100.'
+4. Tandai bias, confounding, leakage, missing data, and kelemahan etika.`,
+                hasilKhusus: 'Verdict kelayakan metodologi and skor metodologi 0-100.'
             }),
 
             b4: (dna, text) => buildPrompt({
@@ -451,14 +843,14 @@ ${dna || '[TEMPEL HASIL FASE 0: DNA RISET]'}
 <NASKAH_BAB_4>
 ${text || '[TEMPEL BAB 4: HASIL DAN PEMBAHASAN]'}
 </NASKAH_BAB_4>`,
-                task: 'Audit Bab 4 - Hasil dan pembahasan',
+                task: 'Audit Bab 4 - Hasil and pembahasan',
                 checks: [severityRubric, evidenceGate, methodFitChecker, antiOverclaim, qualityScale],
-                tupoksi: 'Reviewer hasil. Fokus hanya pada jawaban RQ, validitas analisis, interpretasi hasil, pembahasan dengan teori/literatur, dan pembuktian kontribusi.',
-                cekWajib: `1. Petakan RQ ke data, analisis, hasil, dan pembahasan.
+                tupoksi: 'Reviewer hasil. Fokus hanya pada jawaban RQ, validitas analisis, interpretasi hasil, pembahasan dengan teori/literatur, and pembuktian kontribusi.',
+                cekWajib: `1. Petakan RQ ke data, analisis, hasil, and pembahasan.
 2. Bedakan deskripsi angka dari interpretasi ilmiah.
 3. Cek apakah hasil sesuai metode Bab 3.
-4. Cek klaim novelty dan kesimpulan sementara agar tidak overclaim.`,
-                hasilKhusus: 'Matriks RQ-Hasil-Pembahasan maksimal 5 baris dan skor kedalaman analisis 0-100.'
+4. Cek klaim novelty and kesimpulan sementara agar tidak overclaim.`,
+                hasilKhusus: 'Matriks RQ-Hasil-Pembahasan maksimal 5 baris and skor kedalaman analisis 0-100.'
             }),
 
             b5: (dna, text) => buildPrompt({
@@ -471,12 +863,12 @@ ${text || '[TEMPEL BAB 5: KESIMPULAN DAN SARAN]'}
 </NASKAH_BAB_5>`,
                 task: 'Audit Bab 5 - Penutup',
                 checks: [severityRubric, evidenceGate, antiOverclaim, qualityScale],
-                tupoksi: 'Penguji penutup. Fokus hanya pada kesimpulan, kontribusi, keterbatasan, saran, dan kesiapan sidang.',
+                tupoksi: 'Penguji penutup. Fokus hanya pada kesimpulan, kontribusi, keterbatasan, saran, and kesiapan sidang.',
                 cekWajib: `1. Cek apakah setiap RQ/tujuan dijawab.
 2. Cek kesimpulan agar tidak memunculkan klaim baru.
-3. Cek apakah saran berbasis temuan dan ditujukan ke pihak yang jelas.
-4. Cek kontribusi dan keterbatasan agar spesifik.`,
-                hasilKhusus: 'Matriks Tujuan-RQ-Kesimpulan-Saran dan verdict kesiapan sidang.'
+3. Cek apakah saran berbasis temuan and ditujukan ke pihak yang jelas.
+4. Cek kontribusi and keterbatasan agar spesifik.`,
+                hasilKhusus: 'Matriks Tujuan-RQ-Kesimpulan-Saran and verdict kesiapan sidang.'
             }),
 
             global: (dna, verdicts) => buildPrompt({
@@ -489,12 +881,12 @@ ${verdicts || '[TEMPEL RINGKASAN/TEMUAN DARI AUDIT BAB 1-5]'}
 </HASIL_AUDIT_BAB_1_SAMPAI_5>`,
                 task: 'Audit konsistensi global lintas bab',
                 checks: [severityRubric, methodFitChecker, antiOverclaim],
-                tupoksi: 'Auditor sistemik. Fokus hanya pada kontradiksi dan ketidaksinkronan lintas bab.',
+                tupoksi: 'Auditor sistemik. Fokus hanya pada kontradiksi and ketidaksinkronan lintas bab.',
                 cekWajib: `1. Cek rantai judul -> masalah -> RQ -> metode -> hasil -> kesimpulan.
-2. Cek istilah, variabel, unit analisis, dan batasan lintas bab.
+2. Cek istilah, variabel, unit analisis, and batasan lintas bab.
 3. Cek apakah novelty awal terbukti di pembahasan.
 4. Urutkan revisi dari yang paling mengunci validitas.`,
-                hasilKhusus: 'Verdict konsistensi dan maksimal 10 titik inkonsistensi prioritas.'
+                hasilKhusus: 'Verdict konsistensi and maksimal 10 titik inkonsistensi prioritas.'
             }),
 
             novelty: (dna, report) => buildPrompt({
@@ -505,14 +897,14 @@ ${dna || '[TEMPEL HASIL FASE 0: DNA RISET]'}
 <LAPORAN_AUDIT_TERDAHULU>
 ${report || '[TEMPEL HASIL AUDIT KONSISTENSI / RINGKASAN REVIEW]'}
 </LAPORAN_AUDIT_TERDAHULU>`,
-                task: 'Audit novelty dan kontribusi ilmiah',
+                task: 'Audit novelty and kontribusi ilmiah',
                 checks: [severityRubric, evidenceGate, antiOverclaim],
-                tupoksi: 'Editor novelty. Fokus hanya pada kebaruan, kontribusi, risiko overclaim, dan positioning publikasi.',
+                tupoksi: 'Editor novelty. Fokus hanya pada kebaruan, kontribusi, risiko overclaim, and positioning publikasi.',
                 cekWajib: `1. Identifikasi jenis novelty: teoritis, metodologis, empiris, konteks, data, model, atau instrumen.
 2. Pisahkan novelty asli dari replikasi/konteks baru.
-3. Cek bukti naskah dan bukti eksternal yang masih wajib dicari.
+3. Cek bukti naskah and bukti eksternal yang masih wajib dicari.
 4. Tentukan positioning publikasi realistis.`,
-                hasilKhusus: 'Verdict novelty, maksimal 5 klaim novelty, bukti wajib dicari, dan positioning publikasi.'
+                hasilKhusus: 'Verdict novelty, maksimal 5 klaim novelty, bukti wajib dicari, and positioning publikasi.'
             }),
 
             final: (dna, all) => buildPrompt({
@@ -525,12 +917,12 @@ ${all || '[TEMPEL SEMUA TEMUAN / VERDICT BAB / HASIL AUDIT KONSISTENSI DAN NOVEL
 </RINGKASAN_SEMUA_REVIEW>`,
                 task: 'Laporan evaluasi final penelitian',
                 checks: [severityRubric, qualityScale, evidenceGate, methodFitChecker, antiOverclaim],
-                tupoksi: 'Komite evaluasi final. Fokus hanya pada keputusan akhir, skor, risiko utama, dan roadmap revisi.',
+                tupoksi: 'Komite evaluasi final. Fokus hanya pada keputusan akhir, skor, risiko utama, and roadmap revisi.',
                 cekWajib: `1. Sintesis semua temuan tanpa mengulang panjang.
-2. Kelompokkan isu blocking, mayor, dan minor.
+2. Kelompokkan isu blocking, mayor, and minor.
 3. Hitung scorecard ringkas 0-100.
 4. Susun roadmap revisi 7-14 hari.`,
-                hasilKhusus: 'Verdict utama, scorecard, maksimal 10 temuan kritis, roadmap revisi, dan pertanyaan sidang berisiko.'
+                hasilKhusus: 'Verdict utama, scorecard, maksimal 10 temuan kritis, roadmap revisi, and pertanyaan sidang berisiko.'
             }),
 
             weakness: (dna, text, scope) => buildPrompt({
@@ -545,14 +937,14 @@ ${scope || 'FULL MANUSCRIPT'}
 <NASKAH_UNTUK_SCAN>
 ${text || '[TEMPEL NASKAH YANG MAU DIUJI SECARA AGRESIF]'}
 </NASKAH_UNTUK_SCAN>`,
-                task: 'Scanner kelemahan fatal dan simulasi penguji',
+                task: 'Scanner kelemahan fatal and simulasi penguji',
                 checks: [severityRubric, evidenceGate, methodFitChecker, antiOverclaim],
                 tupoksi: 'Penguji kritis. Fokus hanya pada titik runtuh argumen yang bisa menyerang validitas riset.',
                 cekWajib: `1. Cari kelemahan yang benar-benar bisa dipakai penguji.
 2. Sertakan bukti naskah atau alasan metodologis.
 3. Jangan menyerang pribadi penulis.
 4. Berikan cara menutup celah secara praktis.`,
-                hasilKhusus: 'Top 7 kelemahan fatal, 8 pertanyaan sidang tersulit, jawaban defensible singkat, dan verdict risiko sidang.'
+                hasilKhusus: 'Top 7 kelemahan fatal, 8 pertanyaan sidang tersulit, jawaban defensible singkat, and verdict risiko sidang.'
             }),
 
             validate: (old, newtxt) => buildPrompt({
@@ -570,9 +962,192 @@ ${newtxt || '[TEMPEL NASKAH HASIL REVISI]'}
 2. Nilai status: TUNTAS, SEBAGIAN, BELUM, atau SALAH ARAH.
 3. Jangan meloloskan revisi hanya karena ada teks baru.
 4. Tulis aksi lanjutan paling singkat.`,
-                hasilKhusus: 'Tabel validasi, persentase penyelesaian, maksimal 5 blocking issue, dan verdict revisi.'
+                hasilKhusus: 'Tabel validasi, persentase penyelesaian, maksimal 5 blocking issue, and verdict revisi.'
             })
         };
+
+        function getV(id) { return document.getElementById(id)?.value || ''; }
+        function setV(id, val) { const el = document.getElementById(id); if (el) el.value = val || ''; }
+
+        function normalizeText(val) { return (val || '').replace(/\s+/g, ' ').trim(); }
+        function isTemplateOnly(val, temp) { return normalizeText(val) === normalizeText(temp); }
+        function getCleanField(id, temp) {
+            const val = getV(id).trim();
+            if (!val) return '';
+            return temp && isTemplateOnly(val, temp) ? '' : val;
+        }
+
+        function templateItems(template) {
+            return template.split('\n')
+                .map(line => line.trim())
+                .filter(Boolean)
+                .map((line, index) => {
+                    const sep = line.indexOf(':');
+                    const label = sep >= 0 ? line.slice(0, sep).trim() : line;
+                    const hint = sep >= 0 ? line.slice(sep + 1).trim() : '';
+                    return { index, label, hint };
+                });
+        }
+
+        function isLongField(label) {
+            return /draft|naskah|hasil|pembahasan|masalah|gap|teori|metode|prosedur|simpulan|kontribusi|keterbatasan|verdict|ulasan|review|catatan/i.test(label);
+        }
+
+        function renderFormsForTab(tab) {
+            const configs = [];
+            if (tab === 'dna') {
+                configs.push({ id: 'dna-info', template: dnaPlaceholders.info });
+                configs.push({ id: 'dna-context', template: dnaPlaceholders.context });
+                configs.push({ id: 'dna-final', template: dnaPlaceholders.final });
+            } else if (chapterTabs.includes(tab) || tab === 'weakness') {
+                configs.push({ id: 'editor-text', template: auditInputConfig[tab].text });
+            } else {
+                configs.push({ id: 'multi-input-1', template: finalInputConfig[tab].a });
+                configs.push({ id: 'multi-input-2', template: finalInputConfig[tab].b });
+            }
+
+            configs.forEach(conf => {
+                const container = document.getElementById(conf.id + '-form');
+                if (!container) return;
+                const items = templateItems(conf.template);
+                const currentValues = parseStructuredText(getV(conf.id), items);
+                
+                container.innerHTML = items.map(item => `
+                    <div class="structured-item ${isLongField(item.label) ? 'col-span-full' : ''}">
+                        <label class="structured-label">${item.label}</label>
+                        <textarea class="structured-input" 
+                                  data-structured-for="${conf.id}" 
+                                  data-label="${item.label}"
+                                  placeholder="Isi ${item.label.toLowerCase()} di sini..."
+                                  rows="${isLongField(item.label) ? 4 : 1}">${currentValues[item.index] || ''}</textarea>
+                    </div>
+                `).join('');
+            });
+        }
+
+        function parseStructuredText(text, items) {
+            const parsed = {};
+            const lines = (text || '').split(/\r?\n/);
+            let activeIdx = null;
+            lines.forEach(line => {
+                const trimmed = line.trim();
+                const matched = items.find(it => trimmed.toLowerCase().startsWith((it.label + ':').toLowerCase()));
+                if (matched) {
+                    activeIdx = matched.index;
+                    parsed[activeIdx] = line.slice(line.indexOf(':') + 1).trim();
+                } else if (activeIdx !== null) {
+                    parsed[activeIdx] = [parsed[activeIdx], line].filter(Boolean).join('\n').trim();
+                }
+            });
+            return parsed;
+        }
+
+        function syncStructuredToRaw(targetId) {
+            const container = document.getElementById(targetId + '-form');
+            if (!container) return;
+            const inputs = container.querySelectorAll('.structured-input');
+            const raw = Array.from(inputs).map(inp => `${inp.dataset.label}: ${inp.value}`).join('\n');
+            setV(targetId, raw);
+        }
+
+        function syncActiveStructuredForms() {
+            ['dna-info', 'dna-context', 'dna-final', 'editor-text', 'multi-input-1', 'multi-input-2'].forEach(id => {
+                if (document.getElementById(id + '-form')) syncStructuredToRaw(id);
+            });
+        }
+
+        function saveState(showNotice = false) {
+            syncActiveStructuredForms();
+            const fields = {};
+            [...dnaFieldIds, ...otherFieldIds].forEach(id => fields[id] = getV(id));
+            const savedAt = new Date().toISOString();
+            const payload = { activeTab: currentTab, fields, savedPrompts, savedAt };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+            sessionStorage.setItem(SESSION_KEY, JSON.stringify(payload));
+            updateSessionStatus(savedAt);
+            if (showNotice === true) showToast('Sesi dan prompt berhasil disimpan');
+            syncDnaPreview();
+            updateDnaStatus();
+        }
+
+        function loadState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY) || sessionStorage.getItem(SESSION_KEY);
+                if (!raw) return;
+                const state = JSON.parse(raw);
+                dnaFieldIds.forEach(id => setV(id, state.fields?.[id] || ''));
+                otherFieldIds.forEach(id => setV(id, state.fields?.[id] || ''));
+                savedPrompts = state.savedPrompts || {};
+                currentTab = state.activeTab || 'dna';
+                updateSessionStatus(state.savedAt);
+                syncDnaPreview();
+                updateDnaStatus();
+            } catch (e) { console.error('Load failed', e); }
+        }
+
+        function resetStoredData() {
+            if (!confirm('Hapus semua input yang tersimpan?')) return;
+            localStorage.removeItem(STORAGE_KEY);
+            sessionStorage.removeItem(SESSION_KEY);
+            [...dnaFieldIds, ...otherFieldIds].forEach(id => setV(id, ''));
+            syncDnaPreview();
+            updateDnaStatus();
+            renderFormsForTab(currentTab);
+            updatePrompt();
+            showToast('Simpanan sesi direset');
+        }
+
+        function clearActiveForm() {
+            const ids = currentTab === 'dna' ? dnaFieldIds : 
+                        (['b1', 'b2', 'b3', 'b4', 'b5', 'weakness'].includes(currentTab) ? ['editor-text'] : ['multi-input-1', 'multi-input-2']);
+            if (ids.some(id => getV(id).trim()) && !confirm('Kosongkan field tab ini?')) return;
+            ids.forEach(id => setV(id, ''));
+            renderFormsForTab(currentTab);
+            saveState();
+            updatePrompt();
+        }
+
+        function syncDnaPreview() {
+            const dna = getV('dna-final') || (getV('dna-info') + '\n' + getV('dna-context')).trim();
+            setV('editor-dna', dna || 'Isi Fase 0 dulu untuk sinkronisasi DNA.');
+        }
+
+        function updateDnaStatus() {
+            const state = document.getElementById('dna-save-state');
+            if (!state) return;
+            const hasFinal = getV('dna-final').trim();
+            const hasRaw = getV('dna-info').trim() || getV('dna-context').trim();
+            if (hasFinal) { state.className = 'status-pill status-ok'; state.innerHTML = '<i class="ti ti-lock-check"></i> DNA final aktif'; }
+            else if (hasRaw) { state.className = 'status-pill status-warn'; state.innerHTML = '<i class="ti ti-database"></i> DNA mentah aktif'; }
+            else { state.className = 'status-pill status-warn'; state.innerHTML = '<i class="ti ti-alert-circle"></i> Belum lengkap'; }
+        }
+
+        function updateSessionStatus(savedAt) {
+            if (savedAt) lastSavedAt = savedAt;
+            const el = document.getElementById('session-state');
+            const info = document.getElementById('prompt-save-info');
+            if (el && lastSavedAt) {
+                const time = new Date(lastSavedAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+                el.innerHTML = `<i class="ti ti-device-floppy"></i> Tersimpan ${time}`;
+            }
+            if (info) {
+                info.innerText = savedPrompts[currentTab] ? 'Prompt tab ini sudah tersimpan.' : 'Lengkapi input untuk menyimpan prompt.';
+            }
+        }
+
+        function restoreSavedPrompt() {
+            const saved = savedPrompts[currentTab];
+            if (!saved) { alert('Belum ada prompt tersimpan.'); return; }
+            document.getElementById('prompt-output').innerText = saved;
+            showToast('Prompt dipulihkan');
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.style.opacity = '1';
+            setTimeout(() => toast.style.opacity = '0', 2000);
+        }
 
         function sw(tab) {
             currentTab = tab;
@@ -615,39 +1190,68 @@ ${newtxt || '[TEMPEL NASKAH HASIL REVISI]'}
                 document.getElementById('multi-label-1').innerText = labels[tab][0];
                 document.getElementById('multi-label-2').innerText = labels[tab][1];
             }
-
+            
+            const guide = document.getElementById('input-guide');
+            if (guide) guide.innerHTML = inputGuides[tab] || inputGuides.dna;
+            
+            renderFormsForTab(tab);
             updatePrompt();
         }
 
         function updatePrompt() {
-            const getV = (id) => document.getElementById(id).value;
             let output = '';
-
+            const dna = getCleanField('dna-final', dnaPlaceholders.final) || 
+                       (getCleanField('dna-info', dnaPlaceholders.info) + '\n' + getCleanField('dna-context', dnaPlaceholders.context)).trim();
+            
             if (currentTab === 'dna') {
-                output = templates.dna(getV('dna-info'), getV('dna-context'));
+                output = templates.dna(
+                    getCleanField('dna-info', dnaPlaceholders.info), 
+                    getCleanField('dna-context', dnaPlaceholders.context), 
+                    getCleanField('dna-final', dnaPlaceholders.final)
+                );
             } else if (['b1', 'b2', 'b3', 'b4', 'b5'].includes(currentTab)) {
-                output = templates[currentTab](getV('editor-dna'), getV('editor-text'));
+                output = templates[currentTab](dna, getV('editor-text'));
             } else if (currentTab === 'weakness') {
-                output = templates.weakness(getV('editor-dna'), getV('editor-text'), getV('weak-scope'));
+                output = templates.weakness(dna, getV('editor-text'), getV('weak-scope'));
             } else {
                 output = templates[currentTab](getV('multi-input-1'), getV('multi-input-2'));
             }
 
             document.getElementById('prompt-output').innerText = output || 'Lengkapi input untuk melihat prompt...';
+            if (output && output.length > 50) savedPrompts[currentTab] = output;
+            clearTimeout(saveTimer);
+            saveTimer = setTimeout(saveState, 1000);
         }
 
         function copyPrompt() {
             const text = document.getElementById('prompt-output').innerText;
-            navigator.clipboard.writeText(text).then(() => {
-                const toast = document.getElementById('toast');
-                toast.style.opacity = '1';
-                setTimeout(() => toast.style.opacity = '0', 2000);
-            });
+            const done = () => showToast('Prompt berhasil disalin');
+            if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(text).then(done); }
+            else {
+                const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t); done();
+            }
         }
 
-        document.querySelectorAll('textarea, select').forEach(el => el.addEventListener('input', updatePrompt));
-        sw('dna');
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebar-overlay').classList.toggle('show');
+        }
+
+        document.addEventListener('input', e => {
+            if (e.target.dataset.structuredFor) {
+                syncStructuredToRaw(e.target.dataset.structuredFor);
+                updatePrompt();
+            }
+        });
+
+        document.querySelectorAll('textarea, select').forEach(el => {
+            if (!el.classList.contains('structured-input')) {
+                el.addEventListener('input', updatePrompt);
+            }
+        });
+        window.addEventListener('beforeunload', saveState);
+        loadState();
+        sw(currentTab);
     </script>
 </body>
 </html>
-
